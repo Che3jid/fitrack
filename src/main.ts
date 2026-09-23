@@ -4,7 +4,7 @@ import { profilePage } from './pages/profile';
 import { bindProfileForm, profileForm } from './pages/profile-form';
 import { todayPage } from './pages/today';
 import { ProfileService } from './services/profile';
-import { LocalRepository, STORAGE_KEY } from './storage/local';
+import { IndexedDbRepository } from './storage/indexed-db';
 import { dateKey } from './utils/date';
 import { validateRecordDate } from './domain/records';
 import { RecordService } from './services/records';
@@ -20,7 +20,7 @@ import { backupPage, bindBackup } from './pages/backup';
 const root = document.querySelector<HTMLDivElement>('#app');
 if (!root) throw new Error('FitTrack root element is missing');
 const app = root;
-const repository = new LocalRepository(() => window.localStorage);
+const repository = new IndexedDbRepository(window.indexedDB, () => window.localStorage);
 const service = new ProfileService(repository);
 const records = new RecordService(repository);
 const backups = new BackupService(repository);
@@ -99,8 +99,7 @@ function refreshDay(): void {
 }
 document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshDay(); });
 window.setInterval(refreshDay, 30_000);
-window.addEventListener('storage', (event) => {
-  if (event.key !== STORAGE_KEY && event.key !== null) return;
+repository.onChange(() => {
   if (!app.querySelector('form')) void render();
 });
 void render();

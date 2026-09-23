@@ -13,9 +13,9 @@
 
 `domain` 不导入 DOM、localStorage 或网络 API。`pages/`、`components/`、`services/`、`storage/` 按职责分层，不引入状态管理框架。
 
-存储接口统一异步。`LocalRepository` 使用单个 localStorage 文档整体保存，避免资料、体重和目标部分写入。读取时检查 schemaVersion、资料、日期、记录唯一性、所属用户及数值，拒绝损坏或未知版本并保留原始数据；未来版本必须显式实现迁移。
+存储接口统一异步。浏览器入口使用 `IndexedDbRepository`，将 profiles、plans、weights、foods、trainings、days 和 meta 分别写入对象存储；一次业务更新在同一个 readwrite 事务中读取、校验并替换相关集合，失败时不留下部分写入。读取时检查 schemaVersion、资料、日期、记录唯一性、所属用户及数值，拒绝损坏或未知版本。
 
-记录通过稳定随机 ID 标识，包含 userId、schemaVersion、createdAt、updatedAt。当前没有云账号，未来本地用户标识也不作为服务端授权凭据。支持 Web Locks 的环境串行处理跨标签页写入；不支持时只保证同一仓库实例内串行写入，局域网 HTTP 预览应避免多个标签页同时编辑。
+记录通过稳定随机 ID 标识，包含 userId、schemaVersion、createdAt、updatedAt。当前没有云账号，未来本地用户标识也不作为服务端授权凭据。IndexedDB 的 readwrite 事务串行处理跨标签页更新，BroadcastChannel 通知其他标签页刷新非编辑页面。
 
 ## 规划路由
 
@@ -38,7 +38,7 @@
 
 ## 数据迁移与可恢复删除
 
-存储键沿用 `fittrack.state.v1`，文档版本升至 2。版本 1 先校验、补齐 foods/trainings/days 集合，在内存中使用，下一次成功的整体写入才升级持久化文档。实体版本仍为 1。拒绝未知版本或损坏数据，不清空或部分覆盖。
+数据库名为 `fittrack-local`，当前数据库版本为 1，应用状态 schemaVersion 为 2，实体版本仍为 1。首次初始化会读取旧 localStorage 键 `fittrack.state.v1`，复用既有解析与 schema 1→2 迁移，再通过一个事务写入所有 IndexedDB 集合；提交成功后才移除旧键。拒绝未知版本或损坏数据，不清空或部分覆盖。
 
 记录通过 deletedAt 实现软删除，按日期提供恢复入口；汇总和当前体重选择排除已删除记录。食品变更撤销受影响日期的“记录完成”状态。记录名称经 HTML 转义，不能当作标签或脚本解析。
 
