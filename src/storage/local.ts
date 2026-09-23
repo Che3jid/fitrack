@@ -25,7 +25,7 @@ function profile(value: unknown): boolean {
   try { validateProfile(value as unknown as ProfileInput); return true; } catch { return false; }
 }
 /** Reject unsupported/corrupt data without overwriting it. Migrations are explicit. */
-export function parseState(raw: string): AppState {
+export function parseState(raw: string, depth = 0): AppState {
   const value: unknown = JSON.parse(raw);
   if (!record(value) || ![1, 2].includes(Number(value.schemaVersion)) || typeof value.schemaVersion !== 'number' || !Array.isArray(value.plans) || !Array.isArray(value.weights)) throw new Error('Invalid storage schema');
   // Stage 2 data migrates in memory. The next successful atomic write persists v2.
@@ -36,6 +36,10 @@ export function parseState(raw: string): AppState {
     value.days = [];
   }
   if (!Array.isArray(value.foods) || !Array.isArray(value.trainings) || !Array.isArray(value.days)) throw new Error('Invalid record collections');
+  if (value.recovery !== undefined) {
+    if (depth > 0 || !record(value.recovery) || typeof value.recovery.savedAt !== 'string' || !Number.isFinite(Date.parse(value.recovery.savedAt))) throw new Error('Invalid recovery snapshot');
+    value.recovery.state = parseState(JSON.stringify(value.recovery.state), depth + 1);
+  }
   if (value.profile === null) {
     if (value.plans.length || value.weights.length || value.foods.length || value.trainings.length || value.days.length) throw new Error('Orphaned records');
   } else if (!entity(value.profile) || !profile(value.profile)) throw new Error('Invalid profile');

@@ -1,5 +1,5 @@
 import type { DailyPlan, UserProfile, WeightEntry, FoodEntry, TrainingEntry, DayStatus } from '../domain/models';
-export interface AppState {
+export interface AppData {
   schemaVersion: 2;
   profile: UserProfile | null;
   plans: DailyPlan[];
@@ -7,6 +7,10 @@ export interface AppState {
   foods: FoodEntry[];
   trainings: TrainingEntry[];
   days: DayStatus[];
+}
+export interface AppState extends AppData {
+  /** One bounded recovery snapshot; never nest recovery snapshots. */
+  recovery?: { savedAt: string; state: AppData };
 }
 export const emptyState = (): AppState => ({ schemaVersion: 2, profile: null, plans: [], weights: [], foods: [], trainings: [], days: [] });
 export interface Repository {
