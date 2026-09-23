@@ -51,6 +51,25 @@ dd { margin: 0; text-align: right; font-weight: 600; overflow-wrap: anywhere; }
 .energy-detail > div { margin: 22px 0; }
 .energy-detail span { display: block; font-size: 13px; color: #d6e4d7; margin-bottom: 10px; }
 .energy-detail strong { font-size: 27px; font-variant-numeric: tabular-nums; }
+.energy-dashboard { position: relative; overflow: hidden; display: grid; grid-template-columns: minmax(150px, .8fr) minmax(210px, 260px) minmax(220px, 1fr); align-items: center; gap: 34px; padding: 34px; color: #fff; border: 0; background: radial-gradient(circle at 48% 45%, #3e7655 0, #244b36 42%, #193927 100%); box-shadow: 0 18px 45px #17372424; }
+.energy-dashboard::after { content: ''; position: absolute; width: 240px; height: 240px; right: -110px; top: -130px; border: 1px solid #ffffff14; border-radius: 50%; box-shadow: 0 0 0 38px #ffffff08, 0 0 0 76px #ffffff05; pointer-events: none; }
+.dashboard-intro { align-self: stretch; display: flex; flex-direction: column; justify-content: center; }
+.dashboard-intro h2 { margin: 22px 0 8px; font-size: 22px; letter-spacing: -.4px; }
+.dashboard-intro p { margin: 0; color: #cfe0d2; font-size: 13px; }
+.calorie-gauge { --gauge-progress: 0%; position: relative; z-index: 1; width: min(100%, 238px); aspect-ratio: 1; justify-self: center; display: grid; place-items: center; border-radius: 50%; background: conic-gradient(from -90deg, #bfe681 var(--gauge-progress), #ffffff24 0); box-shadow: 0 0 0 1px #ffffff24, 0 18px 38px #0b23176b; }
+.calorie-gauge::before { content: ''; position: absolute; inset: 13px; border-radius: inherit; background: linear-gradient(145deg, #214832, #173725); box-shadow: inset 0 0 0 1px #ffffff18; }
+.gauge-center { position: relative; z-index: 1; display: grid; justify-items: center; text-align: center; font-variant-numeric: tabular-nums; }
+.gauge-center span { color: #cfe0d2; font-size: 12px; letter-spacing: .8px; }
+.gauge-center strong { margin-top: 5px; font-size: clamp(38px, 5vw, 52px); line-height: 1; letter-spacing: -2px; }
+.gauge-center small { margin-top: 8px; color: #cfe0d2; }
+.gauge-center b { margin-top: 14px; padding: 5px 10px; border-radius: 20px; background: #ffffff17; color: #dff6b9; font-size: 11px; font-weight: 650; }
+.dashboard-stats { position: relative; z-index: 1; display: grid; grid-template-columns: 1fr 1fr; margin: 0; border: 1px solid #ffffff1f; border-radius: 16px; background: #ffffff0b; }
+.dashboard-stats div { min-width: 0; padding: 17px 16px; border-right: 1px solid #ffffff18; border-bottom: 1px solid #ffffff18; }
+.dashboard-stats div:nth-child(2n) { border-right: 0; }
+.dashboard-stats div:nth-last-child(-n + 2) { border-bottom: 0; }
+.dashboard-stats dt { color: #cfe0d2; font-size: 11px; }
+.dashboard-stats dd { margin: 8px 0 0; text-align: left; color: #fff; font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.dashboard-stats .is-over { color: #ffd69c; }
 small { font-size: 12px; font-weight: 400; }
 .metric-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 .metric-grid h2 { color: #5d6c62; font-weight: 500; font-size: 14px; }
@@ -81,6 +100,11 @@ footer { padding: 25px 0 10px; color: #617067; font-size: 12px; line-height: 1.7
   .energy-detail { border-left: 0; border-top: 1px solid #ffffff30; padding: 16px 0 0; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   .energy-detail > div { margin: 0; }
   .energy-detail strong { font-size: 23px; }
+  .energy-dashboard { grid-template-columns: 1fr; gap: 26px; padding: 26px 20px; }
+  .dashboard-intro { text-align: center; align-items: center; }
+  .dashboard-intro h2 { margin-top: 16px; }
+  .calorie-gauge { width: min(76vw, 238px); }
+  .dashboard-stats { width: 100%; }
   .metric-grid { gap: 12px; }
   .metric-grid .card { padding: 18px; }
   .field-grid { gap: 0 12px; }
