@@ -1,22 +1,64 @@
 import './styles/global.css';
+import { layout } from './components/layout';
+import { profilePage } from './pages/profile';
+import { bindProfileForm, profileForm } from './pages/profile-form';
+import { todayPage } from './pages/today';
+import { ProfileService } from './services/profile';
+import { LocalRepository, STORAGE_KEY } from './storage/local';
+import { dateKey } from './utils/date';
 
-const app = document.querySelector<HTMLDivElement>('#app');
-if (!app) throw new Error('FitTrack root element is missing');
+const root = document.querySelector<HTMLDivElement>('#app');
+if (!root) throw new Error('FitTrack root element is missing');
+const app = root;
+const service = new ProfileService(new LocalRepository(() => window.localStorage));
+let generation = 0;
+let shownDate = dateKey(new Date());
 
-app.innerHTML = `
-  <main class="shell">
-    <header class="brand"><span class="brand-mark" aria-hidden="true">F</span> FitTrack</header>
-    <section class="intro" aria-labelledby="title">
-      <p class="eyebrow">每天一点，持续进步</p>
-      <h1 id="title">了解身体，<br />记录改变。</h1>
-      <p class="description">从每天的饮食、训练与体重开始，<br class="desktop-break" />让每一次坚持都有迹可循。</p>
-      <div class="status"><span aria-hidden="true"></span> 开发中 · 工程基础已就绪</div>
-    </section>
-    <section class="features" aria-label="规划中的功能">
-      <article><span class="number">01</span><h2>饮食与营养</h2><p>记录四餐，了解热量与三大营养素。</p></article>
-      <article><span class="number">02</span><h2>训练与消耗</h2><p>留下训练记录，跟踪每日活动。</p></article>
-      <article><span class="number">03</span><h2>体重与趋势</h2><p>通过长期趋势，观察自己的变化。</p></article>
-    </section>
-    <footer>第一阶段预览 · 记录功能将在后续阶段开放</footer>
-  </main>
-`;
+async function render(): Promise<void> {
+  const current = ++generation;
+  try {
+    const state = await service.today();
+    if (current !== generation) return;
+    shownDate = dateKey(new Date());
+    let route = location.hash.slice(1) || '/today';
+    if (!state.profile) route = '/onboarding';
+    else if (!['/today', '/profile', '/profile/edit'].includes(route)) route = '/today';
+    if (location.hash !== `#${route}`) history.replaceState(null, '', `#${route}`);
+    const editing = route === '/profile/edit';
+    if (route === '/onboarding' || editing) {
+      app.innerHTML = layout(profileForm(editing ? state.profile : null), editing ? 'profile' : 'onboarding');
+      bindProfileForm(app, async (input) => {
+        await service.save(input);
+        location.hash = editing ? '/profile' : '/today';
+      });
+      document.title = `${editing ? '编辑资料' : '首次设置'} · FitTrack`;
+    } else if (state.profile && route === '/profile') {
+      app.innerHTML = layout(profilePage(state.profile), 'profile');
+      document.title = '我的 · FitTrack';
+    } else {
+      const plan = state.plans.find((entry) => entry.date === shownDate);
+      if (!plan) throw new Error('无法读取今日计划，请重试。');
+      app.innerHTML = layout(todayPage(plan), 'today');
+      document.title = '今日 · FitTrack';
+    }
+    app.querySelector<HTMLElement>('h1')?.focus({ preventScroll: true });
+    window.scrollTo(0, 0);
+  } catch (cause) {
+    if (current !== generation) return;
+    app.innerHTML = layout('<section class="card error-panel"><h1>暂时无法读取数据</h1><p id="load-error" role="alert"></p><button class="primary" id="retry">重新尝试</button></section>', 'onboarding');
+    app.querySelector('#load-error')!.textContent = cause instanceof Error ? cause.message : '读取失败，请重试。';
+    app.querySelector('#retry')!.addEventListener('click', () => { void render(); });
+  }
+}
+window.addEventListener('hashchange', () => { void render(); });
+// Refresh a dashboard left open overnight, without discarding an unfinished form.
+function refreshDay(): void {
+  if (location.hash === '#/today' && shownDate !== dateKey(new Date())) void render();
+}
+document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshDay(); });
+window.setInterval(refreshDay, 30_000);
+window.addEventListener('storage', (event) => {
+  if (event.key !== STORAGE_KEY && event.key !== null) return;
+  if (!app.querySelector('form')) void render();
+});
+void render();
