@@ -85,3 +85,28 @@ footer { padding: 25px 0 10px; color: #617067; font-size: 12px; line-height: 1.7
   .metric-grid .card { padding: 18px; }
   .field-grid { gap: 0 12px; }
 }
+.quick-actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 20px; }
+.date-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; margin-bottom: 22px; }
+.date-toolbar label { margin-bottom: 0; min-width: 180px; }
+.date-toolbar a { margin-top: 24px; }
+.record-form { max-width: 650px; }
+.record-row { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 20px 0; border-top: 1px solid #e4e9e1; }
+.record-copy { min-width: 0; overflow-wrap: anywhere; }
+.record-copy strong { font-size: 16px; }
+.record-copy p { margin: 6px 0; color: #5d6c62; font-size: 14px; }
+.record-copy small { color: #5d6c62; line-height: 1.6; display: block; }
+.record-actions { display: flex; gap: 8px; flex-shrink: 0; align-items: center; }
+.text-button { border: 0; background: transparent; color: #28593d; font: inherit; font-size: 14px; padding: 12px; min-height: 44px; cursor: pointer; }
+.danger { color: #963e31; }
+.text-button:disabled, .secondary:disabled { opacity: .5; cursor: wait; }
+.text-link { display: inline-flex; min-height: 44px; align-items: center; font-size: 14px; font-weight: 600; }
+.empty-copy { color: #5d6c62; font-size: 14px; padding: 12px 0; }
+.pill.light { color: #39694f; background: #eaf0e7; border-color: #d9e3d5; }
+.deleted-list { margin-top: 20px; }
+.deleted-list summary { cursor: pointer; min-height: 36px; font-size: 14px; }
+#record-error:empty { display: none; }
+@media (max-width: 480px) {
+  .record-row { align-items: flex-start; flex-wrap: wrap; gap: 10px; }
+  .record-actions { margin-left: auto; }
+  .quick-actions > a { flex: 1; padding-left: 10px; padding-right: 10px; white-space: nowrap; }
+}

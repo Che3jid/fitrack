@@ -26,7 +26,7 @@ function setup() {
 describe('profile persistence and plan history', () => {
   it('starts empty without seeding fake records', async () => {
     const { service, storage } = setup();
-    expect(await service.today()).toEqual({ schemaVersion: 1, profile: null, plans: [], weights: [] });
+    expect(await service.today()).toEqual({ schemaVersion: 2, profile: null, plans: [], weights: [], foods: [], trainings: [], days: [] });
     expect(storage.values.size).toBe(0);
   });
   it('saves a complete profile, daily plan and starting weight together, surviving a new repository instance', async () => {
@@ -106,7 +106,7 @@ describe('profile persistence and plan history', () => {
 });
 
 describe('storage boundaries', () => {
-  it.each(['broken JSON', '{"schemaVersion":2,"profile":null,"plans":[],"weights":[]}', '{}'])('keeps unreadable data instead of resetting it: %s', async (raw) => {
+  it.each(['broken JSON', '{"schemaVersion":3,"profile":null,"plans":[],"weights":[]}', '{}'])('keeps unreadable data instead of resetting it: %s', async (raw) => {
     const { storage, service } = setup();
     storage.setItem(STORAGE_KEY, raw);
     await expect(service.read()).rejects.toThrow('原始数据已保留');

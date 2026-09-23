@@ -1,4 +1,6 @@
 import { validateProfile } from '../domain/calculations';
+import { validateFood, validateTraining } from '../domain/records';
+import type { FoodInput, TrainingInput } from '../domain/records';
 import type { ProfileInput } from '../domain/models';
 import { isDateKey } from '../utils/date';
 import { emptyState } from './repository';
@@ -15,7 +17,8 @@ function record(value: unknown): value is Record<string, unknown> {
 function entity(value: unknown): value is Record<string, unknown> {
   return record(value) && value.schemaVersion === 1
     && ['id', 'userId'].every((key) => typeof value[key] === 'string' && value[key].length > 0)
-    && ['createdAt', 'updatedAt'].every((key) => typeof value[key] === 'string' && Number.isFinite(Date.parse(value[key])));
+    && ['createdAt', 'updatedAt'].every((key) => typeof value[key] === 'string' && Number.isFinite(Date.parse(value[key])))
+    && (value.deletedAt === undefined || (typeof value.deletedAt === 'string' && Number.isFinite(Date.parse(value.deletedAt))));
 }
 function profile(value: unknown): boolean {
   if (!record(value)) return false;
@@ -24,22 +27,36 @@ function profile(value: unknown): boolean {
 /** Reject unsupported/corrupt data without overwriting it. Migrations are explicit. */
 export function parseState(raw: string): AppState {
   const value: unknown = JSON.parse(raw);
-  if (!record(value) || value.schemaVersion !== 1 || !Array.isArray(value.plans) || !Array.isArray(value.weights)) throw new Error('Invalid storage schema');
+  if (!record(value) || ![1, 2].includes(Number(value.schemaVersion)) || typeof value.schemaVersion !== 'number' || !Array.isArray(value.plans) || !Array.isArray(value.weights)) throw new Error('Invalid storage schema');
+  // Stage 2 data migrates in memory. The next successful atomic write persists v2.
+  if (value.schemaVersion === 1) {
+    value.schemaVersion = 2;
+    value.foods = [];
+    value.trainings = [];
+    value.days = [];
+  }
+  if (!Array.isArray(value.foods) || !Array.isArray(value.trainings) || !Array.isArray(value.days)) throw new Error('Invalid record collections');
   if (value.profile === null) {
-    if (value.plans.length || value.weights.length) throw new Error('Orphaned records');
+    if (value.plans.length || value.weights.length || value.foods.length || value.trainings.length || value.days.length) throw new Error('Orphaned records');
   } else if (!entity(value.profile) || !profile(value.profile)) throw new Error('Invalid profile');
   const owner = record(value.profile) ? value.profile.userId : null;
-  for (const [kind, entries] of [['plans', value.plans], ['weights', value.weights]] as const) {
+  for (const [kind, entries] of [['plans', value.plans], ['weights', value.weights], ['foods', value.foods], ['trainings', value.trainings], ['days', value.days]] as const) {
     const dates = new Set<string>();
     const ids = new Set<unknown>();
     for (const entry of entries) {
-      if (!entity(entry) || entry.userId !== owner || !isDateKey(entry.date) || dates.has(entry.date) || ids.has(entry.id)) throw new Error('Invalid daily record');
+      if (!entity(entry) || entry.userId !== owner || !isDateKey(entry.date) || (['plans', 'weights', 'days'].includes(kind) && dates.has(entry.date)) || ids.has(entry.id)) throw new Error('Invalid daily record');
       dates.add(entry.date);
       ids.add(entry.id);
       if (kind === 'plans') {
         if (entry.calculationVersion !== 'mifflin-v1' || !profile(entry.profileSnapshot)
           || !['bmrKcal', 'tdeeKcal', 'targetKcal'].every((key) => typeof entry[key] === 'number' && Number.isFinite(entry[key]) && entry[key] > 0)) throw new Error('Invalid plan');
-      } else if (typeof entry.weightKg !== 'number' || !Number.isFinite(entry.weightKg) || entry.weightKg < 30 || entry.weightKg > 350) throw new Error('Invalid weight');
+      } else if (kind === 'weights') {
+        if (typeof entry.weightKg !== 'number' || !Number.isFinite(entry.weightKg) || entry.weightKg < 30 || entry.weightKg > 350) throw new Error('Invalid weight');
+      } else if (kind === 'foods') validateFood(entry as unknown as FoodInput);
+      else if (kind === 'trainings') {
+        validateTraining(entry as unknown as TrainingInput);
+        if (entry.estimateSource !== 'manual') throw new Error('Invalid estimate source');
+      } else if (typeof entry.dietCompleted !== 'boolean') throw new Error('Invalid completion status');
     }
   }
   return value as unknown as AppState;

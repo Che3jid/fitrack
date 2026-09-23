@@ -11,6 +11,8 @@ export interface Entity {
   schemaVersion: 1;
   createdAt: string;
   updatedAt: string;
+  /** Reversible deletion for user-entered records. */
+  deletedAt?: string;
 }
 
 export interface ProfileInput {
