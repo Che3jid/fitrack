@@ -1,6 +1,6 @@
 # FitTrack
 
-一个手机优先的开源健身饮食记录网页项目，使用 HTML、CSS 和 TypeScript，逐步增加 PWA 支持。
+一个手机优先的开源健身饮食记录项目。网页端使用 HTML、CSS 和 TypeScript；iPhone 端使用 SwiftUI、WKWebView 和 HealthKit，并复用同一套界面与本地数据逻辑。
 
 GitHub 仓库：[Che3jid/fitrack](https://github.com/Che3jid/fitrack)。产品名称为 FitTrack，仓库名为 `fitrack`。
 
@@ -28,6 +28,8 @@ GitHub 仓库：[Che3jid/fitrack](https://github.com/Che3jid/fitrack)。产品�
 - [Vitest](https://vitest.dev/guide/)：纯计算模块单元测试。
 - Git / GitHub：版本控制；CI 在后续阶段配置。
 - IndexedDB：按资料、食物、训练、体重、每日状态和目标快照分集合保存，以事务保证一次更新完整写入；业务服务只依赖异步存储接口。
+- SwiftUI + WKWebView：提供原生 iPhone App 外壳，并在构建时把网页产物打包进 App。
+- HealthKit：已加入权限桥接，为后续读取 Apple Watch 同步到 iPhone 的体重、步数、心率、运动和活动能量做准备。
 
 ## 运行
 
@@ -53,6 +55,12 @@ Mac 与 iPhone 连接同一可信局域网后，可以执行 `npm run dev -- --h
 
 `dist/` 是后续静态部署的产物。GitHub 仓库用于托管源码，项目网页目前没有部署到公网。
 
+### iPhone 版
+
+需要 Xcode 以及已经安装好的 Node.js。在 Xcode 中打开 `ios/FitTrack.xcodeproj`，选择 `FitTrack` Target，然后在 **Signing & Capabilities** 中选择自己的 Apple Developer Team。选择一台 iPhone 模拟器后点击运行；Xcode 会自动构建网页并打包到 App 中。
+
+模拟器可以验证界面和本地记录。HealthKit 的真实健康数据需要使用实体 iPhone，并在系统授权弹窗中允许 FitTrack 读取。当前版本只完成权限连接，尚未把健康数据自动写入 FitTrack 记录。
+
 ## 当前目录
 
 ```text
@@ -70,6 +78,7 @@ src/
   main.ts              路由和应用入口
 tests/                 计算、存储、记录、趋势、备份、迁移和异常恢复测试
 docs/architecture.md   分层、路由、持久化和阶段规划
+ios/                   SwiftUI iPhone 工程、HealthKit 桥接与 Xcode 配置
 ```
 
 ## 使用方式与本地数据
@@ -136,8 +145,9 @@ TDEE = BMR × 活动系数
 - [x] 第四阶段：趋势、数据导入导出、手机体验。
 - [x] 本地 IndexedDB：分集合存储、原子事务、旧数据自动迁移和跨标签页刷新。
 - [x] GitHub 开源仓库。
+- [x] iPhone 基础工程：SwiftUI、内置网页、HealthKit 权限桥接。
 - [ ] 第五阶段：CI、静态部署、PWA。
-- [ ] 后续：可选云同步；不在 V1 引入 AI 食物识别。
+- [ ] 后续：从 HealthKit 导入 Apple Watch 数据、可选云同步；不在 V1 引入 AI 食物识别。
 
 本地版本的数据只保存在当前浏览器，清除网站数据可能丢失记录；请定期从“我的 → 数据备份”下载 JSON 文件。
 

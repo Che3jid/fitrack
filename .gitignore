@@ -11,3 +11,7 @@ coverage/
 .vscode/*
 !.vscode/extensions.json
 *.tsbuildinfo
+DerivedData/
+*.xcuserstate
+xcuserdata/
+ios/build/
