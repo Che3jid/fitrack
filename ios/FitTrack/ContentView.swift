@@ -3,7 +3,7 @@ import SwiftUI
 struct ContentView: View {
     var body: some View {
         FitTrackWebView()
-            .background(Color(red: 0.051, green: 0.055, blue: 0.055))
-            .preferredColorScheme(.dark)
+            .background(Color(red: 0.82, green: 0.82, blue: 0.80))
+            .preferredColorScheme(.light)
     }
 }
