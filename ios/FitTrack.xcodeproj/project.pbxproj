@@ -1,7 +1,8 @@
 // !$*UTF8*$!
 {
 	archiveVersion = 1;
-	classes = {};
+	classes = {
+	};
 	objectVersion = 56;
 	objects = {
 
@@ -93,8 +94,10 @@
 				R10000000000000000000001 /* Resources */,
 				H10000000000000000000001 /* Build FitTrack Web App */,
 			);
-			buildRules = ();
-			dependencies = ();
+			buildRules = (
+			);
+			dependencies = (
+			);
 			name = FitTrack;
 			productName = FitTrack;
 			productReference = A10000000000000000000008 /* FitTrack.app */;
@@ -110,19 +113,27 @@
 				LastSwiftUpdateCheck = 2700;
 				LastUpgradeCheck = 2700;
 				TargetAttributes = {
-					T10000000000000000000001 = { CreatedOnToolsVersion = 27.0; };
+					T10000000000000000000001 = {
+						CreatedOnToolsVersion = 27.0;
+					};
 				};
 			};
 			buildConfigurationList = L10000000000000000000001 /* Build configuration list for PBXProject "FitTrack" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = zh_CN;
 			hasScannedForEncodings = 0;
-			knownRegions = (Base, en, zh_CN);
+			knownRegions = (
+				Base,
+				en,
+				zh_CN,
+			);
 			mainGroup = G10000000000000000000001;
 			productRefGroup = G10000000000000000000003 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
-			targets = (T10000000000000000000001 /* FitTrack */);
+			targets = (
+				T10000000000000000000001 /* FitTrack */,
+			);
 		};
 /* End PBXProject section */
 
@@ -130,7 +141,9 @@
 		R10000000000000000000001 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
-			files = (B10000000000000000000005 /* Assets.xcassets in Resources */);
+			files = (
+				B10000000000000000000005 /* Assets.xcassets in Resources */,
+			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
@@ -140,13 +153,16 @@
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
-			files = ();
-			inputPaths = ();
+			files = (
+			);
+			inputPaths = (
+			);
 			name = "Build FitTrack Web App";
-			outputPaths = ();
+			outputPaths = (
+			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/zsh;
-			shellScript = "set -e\ncd \"$SRCROOT/..\"\nexport PATH=\"/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:$PATH\"\nif [ ! -d node_modules ]; then\n  echo \"error: Run npm ci in the FitTrack repository before building the iOS app.\"\n  exit 1\nfi\nnpm run build\nWEB_DEST=\"$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/web\"\nrm -rf \"$WEB_DEST\"\nmkdir -p \"$WEB_DEST\"\ncp -R dist/. \"$WEB_DEST/\"\n";
+			shellScript = "set -e\ncd \"$SRCROOT/..\"\nexport PATH=\"/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:$PATH\"\nif [ ! -d node_modules ]; then\n  echo \"error: Run npm ci in the FitTrack repository before building the iOS app.\"\n  exit 1\nfi\nnpm run build\nWEB_DEST=\"$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/web\"\nrm -rf \"$WEB_DEST\"\nmkdir -p \"$WEB_DEST\"\ncp -R dist/. \"$WEB_DEST/\"\nnode \"$SRCROOT/prepare-web.cjs\" \"$WEB_DEST/index.html\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -249,13 +265,19 @@
 /* Begin XCConfigurationList section */
 		L10000000000000000000001 /* Build configuration list for PBXProject "FitTrack" */ = {
 			isa = XCConfigurationList;
-			buildConfigurations = (C10000000000000000000001 /* Debug */, C10000000000000000000002 /* Release */);
+			buildConfigurations = (
+				C10000000000000000000001 /* Debug */,
+				C10000000000000000000002 /* Release */,
+			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 		L10000000000000000000002 /* Build configuration list for PBXNativeTarget "FitTrack" */ = {
 			isa = XCConfigurationList;
-			buildConfigurations = (D10000000000000000000001 /* Debug */, D10000000000000000000002 /* Release */);
+			buildConfigurations = (
+				D10000000000000000000001 /* Debug */,
+				D10000000000000000000002 /* Release */,
+			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};

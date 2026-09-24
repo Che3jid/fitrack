@@ -2,6 +2,8 @@
 
 该工程使用 SwiftUI 和 `WKWebView` 承载现有 FitTrack 前端。Xcode 构建阶段会在仓库根目录运行 `npm run build`，再把 `dist/` 复制进 App Bundle，因此网页与 iPhone 版共用一套 UI 和业务逻辑。
 
+构建阶段会将 Vite 的单文件入口脚本改为延迟加载的普通脚本。`WKWebView` 从 App 内的 `file://` 路径打开页面时，这可避免模块脚本因本地文件限制而无法执行，造成空白页。
+
 ## 打开与运行
 
 1. 用 Xcode 打开 `ios/FitTrack.xcodeproj`。
