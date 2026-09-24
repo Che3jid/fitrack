@@ -2,12 +2,13 @@
 
 ## 当前阶段
 
-第四阶段已实现首次设置、今日、我的、饮食、训练、体重、趋势、本地备份及持久化。`main.ts` 负责 hash 路由及首次使用守卫，页面负责交互和展示，`ProfileService` 负责资料，`RecordService` 负责日常记录，`dailySummary` 与 `buildTrends` 从原始记录派生统计，`BackupService` 负责可校验的完整导出、导入及一次恢复。
+第四阶段已实现首次设置、今日、我的、饮食、训练、体重、趋势、本地备份及持久化；现已增加可选的 SQLite 后端与手动同步。`main.ts` 负责 hash 路由及首次使用守卫，页面负责交互和展示，`ProfileService` 负责资料，`RecordService` 负责日常记录，`dailySummary` 与 `buildTrends` 从原始记录派生统计，`BackupService` 负责完整备份，`SyncService` 负责服务器预览和有确认的双向替换。
 
 ## 依赖方向
 
 ```text
-页面 / 公共组件 → 业务服务 → 存储接口 → 本地适配器 / 未来云适配器
+页面 / 公共组件 → 业务服务 → 存储接口 → IndexedDB 本地适配器
+                           SyncService → HTTP API → SQLite
                         → domain 纯计算与模型
 ```
 
@@ -15,7 +16,9 @@
 
 存储接口统一异步。浏览器入口使用 `IndexedDbRepository`，将 profiles、plans、weights、foods、trainings、days 和 meta 分别写入对象存储；一次业务更新在同一个 readwrite 事务中读取、校验并替换相关集合，失败时不留下部分写入。读取时检查 schemaVersion、资料、日期、记录唯一性、所属用户及数值，拒绝损坏或未知版本。
 
-记录通过稳定随机 ID 标识，包含 userId、schemaVersion、createdAt、updatedAt。当前没有云账号，未来本地用户标识也不作为服务端授权凭据。IndexedDB 的 readwrite 事务串行处理跨标签页更新，BroadcastChannel 通知其他标签页刷新非编辑页面。
+记录通过稳定随机 ID 标识，包含 userId、schemaVersion、createdAt、updatedAt。当前没有云账号，本地 userId 不作为服务端授权凭据；手动同步使用独立访问密钥。IndexedDB 的 readwrite 事务串行处理跨标签页更新，BroadcastChannel 通知其他标签页刷新非编辑页面。
+
+后端 `server/` 使用 Node.js 内置 SQLite，按相同集合保存记录。`PUT /api/state` 用修订版检查和 SQLite 事务执行完整替换；冲突返回 409，不部分写入。`GET /api/state` 返回当前修订版与状态。用户需预览两端摘要并主动选择方向；下载写入本地之前再次检查服务器修订版与本地快照，并保留一个可恢复副本。不在这一阶段自动合并或后台上传。
 
 ## 规划路由
 
@@ -33,8 +36,9 @@
 | #/profile | 个人资料 |
 | #/profile/edit | 编辑资料 |
 | #/backup | 导出、导入及恢复本地数据 |
+| #/sync | 连接后端、预览并手动同步 |
 
-使用 hash 路由，静态托管无需服务端路由回退。无资料时除备份页外的路由进入首次设置，允许新设备先导入备份；有资料时未知路由回到今日。记录路由使用 date 查询参数，食物/训练编辑使用 id 定位；日期在 UI、业务和存储边界分别校验。趋势使用 days 与 end 查询参数，限制为 7、30、90 日且不能选择未来日期。首次设置和编辑资料复用同一表单模块。
+使用 hash 路由，静态托管无需服务端路由回退。无资料时除备份和同步页外的路由进入首次设置，允许新设备先导入备份或从数据库下载；有资料时未知路由回到今日。记录路由使用 date 查询参数，食物/训练编辑使用 id 定位；日期在 UI、业务和存储边界分别校验。趋势使用 days 与 end 查询参数，限制为 7、30、90 日且不能选择未来日期。首次设置和编辑资料复用同一表单模块。
 
 ## 数据迁移与可恢复删除
 

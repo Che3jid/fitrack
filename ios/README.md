@@ -12,6 +12,8 @@
 4. 先选择 iPhone 模拟器运行，确认界面加载。
 5. HealthKit 权限与真实健康数据请使用已登录同一 Apple ID 的真机测试。
 
+App 的“我的 → 连接数据库”可手动同步 Mac 上的 FitTrack SQLite 服务。真机需与 Mac 在同一可信局域网，服务以 `FITTRACK_HOST=0.0.0.0 npm run server` 启动，并在 App 中填写 Mac 的局域网地址及访问密钥。首次连接会请求本地网络权限；同步需要用户核对数据并主动选择方向。
+
 工程已经添加 HealthKit Capability，并向网页注入 `window.fittrackNative`：
 
 ```js
@@ -24,4 +26,4 @@ window.addEventListener('fittrack:healthkit', (event) => console.log(event.detai
 
 ## 微信登录接入准备
 
-当前版本没有微信登录，也不会把本地记录上传。接入前需先准备可用于 iOS 应用的微信开放平台 AppID、对应的 iOS 关联配置，并规划服务端完成登录凭证交换与用户身份映射；敏感密钥不得放入 App 或打包网页。登录后还需要明确本地记录如何经用户确认关联到账号，避免覆盖现有 IndexedDB 数据。在这些条件具备前，首次设置和所有记录功能保持本地可用。
+当前版本没有微信登录，也不会自动上传本地记录。接入前需先准备可用于 iOS 应用的微信开放平台 AppID、对应的 iOS 关联配置，并规划服务端完成登录凭证交换与用户身份映射；敏感密钥不得放入 App 或打包网页。登录后还需要明确本地记录如何经用户确认关联到账号，避免覆盖现有 IndexedDB 数据。在这些条件具备前，首次设置和所有记录功能保持本地可用。

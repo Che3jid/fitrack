@@ -19,6 +19,8 @@ import { BackupService } from './services/backup';
 import { backupPage, bindBackup } from './pages/backup';
 import { adaptiveRecommendation } from './services/recommendations';
 import { animateView, stopMotion } from './ui/motion';
+import { SyncService } from './services/sync';
+import { bindSync, syncPage } from './pages/sync';
 
 const root = document.querySelector<HTMLDivElement>('#app');
 if (!root) throw new Error('FitTrack root element is missing');
@@ -27,26 +29,32 @@ const repository = new IndexedDbRepository(window.indexedDB, () => window.localS
 const service = new ProfileService(repository);
 const records = new RecordService(repository);
 const backups = new BackupService(repository);
+const sync = new SyncService(repository);
 let generation = 0;
 let shownDate = dateKey(new Date());
 
 async function render(): Promise<void> {
   const current = ++generation;
   try {
-    // Backup preview/confirmation must not implicitly add a daily plan.
-    const state = location.hash.split('?')[0] === '#/backup' ? await repository.read() : await service.today();
+    // Backup and sync previews must not implicitly add a daily plan.
+    const utilityPage = ['#/backup', '#/sync'].includes(location.hash.split('?')[0] ?? '');
+    const state = utilityPage ? await repository.read() : await service.today();
     if (current !== generation) return;
     shownDate = dateKey(new Date());
     const [path, query] = location.hash.slice(1).split('?');
     const params = new URLSearchParams(query);
     let route = path || '/today';
-    if (!state.profile && route !== '/backup') route = '/onboarding';
-    else if (!['/today', '/profile', '/profile/edit', '/diet', '/diet/edit', '/training', '/training/edit', '/weight', '/weight/edit', '/trends', '/backup', '/onboarding'].includes(route)) route = '/today';
+    if (!state.profile && route !== '/backup' && route !== '/sync') route = '/onboarding';
+    else if (!['/today', '/profile', '/profile/edit', '/diet', '/diet/edit', '/training', '/training/edit', '/weight', '/weight/edit', '/trends', '/backup', '/sync', '/onboarding'].includes(route)) route = '/today';
     if (state.profile && route === '/onboarding') route = '/today';
     if (route !== path) history.replaceState(null, '', `#${route}`);
     const editing = route === '/profile/edit';
     const kind: RecordKind | null = route.startsWith('/diet') ? 'foods' : route.startsWith('/training') ? 'trainings' : route.startsWith('/weight') ? 'weights' : null;
-    if (route === '/backup') {
+    if (route === '/sync') {
+      app.innerHTML = layout(syncPage(state), state.profile ? 'profile' : 'onboarding');
+      bindSync(app, sync, render);
+      document.title = '数据库同步 · FitTrack';
+    } else if (route === '/backup') {
       app.innerHTML = layout(backupPage(state), state.profile ? 'profile' : 'onboarding');
       bindBackup(app, backups, state, render);
       document.title = '数据备份 · FitTrack';
@@ -73,7 +81,7 @@ async function render(): Promise<void> {
       document.title = `${kind === 'foods' ? '饮食' : kind === 'trainings' ? '训练' : '体重'}记录 · FitTrack`;
     } else if (route === '/onboarding' || editing) {
       app.innerHTML = layout(profileForm(editing ? state.profile : null), editing ? 'profile' : 'onboarding');
-      if (!editing) app.querySelector('main')!.insertAdjacentHTML('beforeend', '<a class="text-link" href="#/backup">已有备份？导入恢复 →</a>');
+      if (!editing) app.querySelector('main')!.insertAdjacentHTML('beforeend', '<a class="text-link" href="#/backup">已有备份？导入恢复 →</a><p><a class="text-link" href="#/sync">已有数据库？连接下载 →</a></p>');
       bindProfileForm(app, async (input) => {
         await service.save(input);
         location.hash = editing ? '/profile' : '/today';

@@ -7,5 +7,6 @@ export function profilePage(profile: UserProfile): string {
     <section class="card"><div class="section-heading"><h2>个人资料</h2><a href="#/profile/edit" class="secondary">编辑资料</a></div><dl class="details"><div><dt>公式使用的性别</dt><dd>${profile.sex === 'male' ? '男' : '女'}</dd></div><div><dt>年龄</dt><dd>${profile.ageYears} 岁</dd></div><div><dt>身高</dt><dd>${profile.heightCm} cm</dd></div><div><dt>当前体重</dt><dd>${profile.weightKg} kg</dd></div><div><dt>活动水平</dt><dd>${activityLabels[profile.activityLevel]}</dd></div><div><dt>健身目标</dt><dd>${goalLabels[profile.goal]}</dd></div></dl></section>
     <section class="card"><h2>当前热量计划</h2><dl class="details"><div><dt>BMR（估算）</dt><dd>${number(plan.bmrKcal)} kcal</dd></div><div><dt>TDEE（估算）</dt><dd>${number(plan.tdeeKcal)} kcal</dd></div><div><dt>每日目标</dt><dd>${number(plan.targetKcal)} kcal</dd></div></dl></section>
     <section class="notice"><strong>体重记录</strong><p>按日期记录与修改体重，较新的记录会同步到当前资料。</p><a href="#/weight">管理体重记录 →</a></section>
-    <section class="notice"><strong>数据备份</strong><p>资料仅保存在这个浏览器，不会自动同步到其他设备。定期导出备份，也可以在其他设备导入恢复。</p><a href="#/backup">导出或导入备份 →</a></section>`;
+    <section class="notice"><strong>后端数据库</strong><p>连接自己的 FitTrack 数据库，核对两端记录后手动上传或下载。</p><a href="#/sync">连接数据库 →</a></section>
+    <section class="notice"><strong>数据备份</strong><p>当前记录保存在这台设备，未连接数据库时不会同步到其他设备。定期导出备份，也可以在其他设备导入恢复。</p><a href="#/backup">导出或导入备份 →</a></section>`;
 }

@@ -24,6 +24,13 @@
 	<string>FitTrack 读取体重、训练、活动能量、心率和步数，用于更新你的本地健身记录。</string>
 	<key>NSHealthUpdateUsageDescription</key>
 	<string>FitTrack 仅在你明确选择后，才会将健身记录写入 Apple 健康。</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>FitTrack 仅在你选择数据库同步时，连接同一局域网中的个人数据库服务。</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
