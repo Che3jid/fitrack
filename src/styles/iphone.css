@@ -1,151 +1,54 @@
-/* Dark iPhone presentation inspired by the supplied FitDiet reference.
-   The existing local records, routes, and calculations remain the data source. */
-.snapshot-strip { display: none; }
-
+/* Compact instrumentation layout for the iPhone shell and narrow browsers. */
 @media (max-width: 680px) {
-  :root { --mobile-bg: #020617; --mobile-card: #0f172a; --mobile-line: #243044; --mobile-text: #f1f5f9; --mobile-muted: #94a3b8; --mobile-green: #10b981; background: var(--mobile-bg); color: var(--mobile-text); }
-  html, body { min-width: 320px; background: var(--mobile-bg); }
-  body { color: var(--mobile-text); }
-  .shell { max-width: 500px; padding: 0 16px 120px; }
-  .shell::before, .shell::after { display: none; }
-
-  .brand { position: sticky; top: 0; z-index: 15; min-height: 62px; margin: 0 -16px; padding: 10px 16px; border-bottom: 1px solid #1e293b; background: #020617e8; -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); }
-  .brand a { gap: 9px; color: var(--mobile-text); font-size: 19px; font-weight: 800; letter-spacing: -.6px; }
-  .brand-mark { width: 34px; height: 34px; border: 2px solid transparent; border-radius: 11px; background: linear-gradient(#020617, #020617) padding-box, linear-gradient(135deg, #f77737, #e1306c 35%, #833ab4 68%, #10b981) border-box; color: var(--mobile-green); box-shadow: none; }
-  .brand-name > span { background: linear-gradient(90deg, #f77737, #e1306c, #a855f7, #10b981); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
-  .local-badge { padding: 6px 9px; color: #a7f3d0; border: 1px solid #145942; background: #0c3028; box-shadow: none; font-size: 10px; font-weight: 700; }
-
-  .page-heading { padding: 27px 2px 18px; animation: none; }
-  .page-heading .eyebrow { margin: 0 0 7px; color: var(--mobile-green); font-size: 12px; font-weight: 750; letter-spacing: .2px; }
-  .page-heading h1 { margin: 0; color: var(--mobile-text); background: none; -webkit-text-fill-color: currentColor; font-size: clamp(26px, 7.4vw, 34px); line-height: 1.22; letter-spacing: -1.2px; }
-  .page-heading .muted { margin: 8px 0 0; font-size: 13px; line-height: 1.55; }
-  h2 { color: var(--mobile-text); font-size: 16px; letter-spacing: -.2px; }
-  a, .text-link, .text-button { color: #6ee7b7; }
-  .muted, .field-help, .empty-copy, footer, dt { color: var(--mobile-muted); }
-
-  .snapshot-strip { display: flex; justify-content: space-between; gap: 9px; margin: 0 0 20px; overflow-x: auto; scrollbar-width: none; }
-  .snapshot-strip::-webkit-scrollbar { display: none; }
-  .snapshot { min-width: 68px; display: flex; flex-direction: column; align-items: center; gap: 7px; color: var(--mobile-muted); text-decoration: none; font-size: 10px; font-weight: 650; white-space: nowrap; }
-  .snapshot-ring { display: grid; place-items: center; width: 62px; height: 62px; padding: 2px; border-radius: 50%; background: conic-gradient(from -70deg, #f77737, #e1306c, #833ab4, #10b981); }
-  .snapshot:first-child .snapshot-ring { background: conic-gradient(from -90deg, #10b981 var(--story-fill), #334155 0); }
-  .snapshot-ring > span { display: grid; place-items: center; width: 100%; height: 100%; border-radius: 50%; background: var(--mobile-bg); color: var(--mobile-text); font-size: 12px; font-weight: 800; font-variant-numeric: tabular-nums; }
-  .snapshot-ring.add { border: 2px dashed #475569; padding: 0; background: transparent; }
-  .snapshot-ring.add > span { color: var(--mobile-green); font-size: 28px; font-weight: 400; }
-
-  .card { margin-bottom: 14px; padding: 20px; border: 1px solid var(--mobile-line); border-radius: 20px; background: var(--mobile-card); box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; animation: none; transition: border-color .2s, transform .2s; }
-  .card:hover { transform: none; border-color: var(--mobile-line); box-shadow: none; }
-  .energy-dashboard { display: flex; flex-direction: column; align-items: stretch; gap: 20px; padding: 21px 19px 19px; color: var(--mobile-text); border: 1px solid #254539; border-radius: 22px; background: radial-gradient(circle at 90% -10%, #154739 0, #0f172a 42%, #0b1324 100%); box-shadow: none; }
-  .energy-dashboard::before, .energy-dashboard::after { display: none; }
-  .energy-dashboard:hover { transform: none; box-shadow: none; }
-  .dashboard-intro { align-items: flex-start; text-align: left; }
-  .dashboard-intro .pill { padding: 5px 10px; color: #6ee7b7; border: 1px solid #145a42; background: #0c3027; font-size: 11px; font-weight: 750; }
-  .dashboard-intro h2 { margin: 12px 0 3px; color: var(--mobile-text); font-size: 19px; letter-spacing: -.4px; }
-  .dashboard-intro p { color: var(--mobile-muted); font-size: 12px; }
-  .calorie-gauge { width: min(60vw, 196px); align-self: center; background: conic-gradient(from -90deg, #10b981 var(--gauge-progress), #334155 0); box-shadow: 0 0 0 1px #10b98135, 0 13px 32px #0005; animation: none; }
-  .calorie-gauge::before { inset: 12px; background: #0b1324; box-shadow: inset 0 0 0 1px #233449; }
-  .calorie-gauge::after { display: none; }
-  .gauge-center span, .gauge-center small { color: var(--mobile-muted); }
-  .gauge-center strong { color: white; font-size: 43px; letter-spacing: -2px; }
-  .gauge-center b { margin-top: 9px; padding: 5px 9px; color: #6ee7b7; background: #10b9811c; }
-  .dashboard-stats { width: 100%; border: 1px solid #26364a; border-radius: 15px; background: #02061775; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
-  .dashboard-stats div { padding: 12px 11px; border-color: #26364a; }
-  .dashboard-stats dt { color: var(--mobile-muted); font-size: 10px; }
-  .dashboard-stats dd { margin-top: 6px; color: var(--mobile-text); font-size: clamp(17px, 4.9vw, 21px); letter-spacing: -.5px; }
-  .dashboard-stats dd small { font-size: 10px; }
-  .dashboard-stats .is-over { color: #fb923c; }
-
-  .quick-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; margin: 17px 0 20px; }
-  .quick-actions > a { min-width: 0; margin: 0; padding: 12px 8px; font-size: 13px; white-space: nowrap; }
-  .quick-actions > a:first-child { grid-column: 1 / -1; min-height: 50px; font-size: 15px; }
-  .primary, .secondary { min-height: 47px; border-radius: 12px; }
-  .primary { color: #052015; border: 1px solid #10b981; background: linear-gradient(100deg, #10b981, #34d399); box-shadow: 0 7px 19px #10b9812a; font-weight: 800; }
-  .primary:hover { background: #10b981; transform: none; box-shadow: 0 7px 19px #10b9812a; }
-  .secondary { color: #b6f4d7; border: 1px solid #294639; background: #10251f; box-shadow: none; }
-  .secondary:hover { background: #16372b; transform: none; box-shadow: none; }
-  .primary:active, .secondary:active, .bottom-nav a:active, .snapshot:active { transform: scale(.97); }
-
-  .metric-grid { gap: 10px; }
-  .metric-grid .card { padding: 17px 14px; }
-  .metric-grid h2 { margin-bottom: 11px; color: var(--mobile-muted); font-size: 12px; font-weight: 650; }
-  .metric-grid .metric { color: var(--mobile-text); font-size: clamp(22px, 6vw, 28px); letter-spacing: -.7px; font-variant-numeric: tabular-nums; }
-  .metric-grid .metric small { color: var(--mobile-muted); font-size: 11px; }
-  .metric-grid p { margin: 9px 0 0; font-size: 11px; line-height: 1.45; }
-  .metric-grid a { display: inline-block; margin-top: 10px; font-size: 12px; font-weight: 700; }
-  .section-heading { margin-bottom: 11px; }
-  .section-heading h2 { margin: 0; }
-  .section-heading > span { color: var(--mobile-muted); }
-  .macro-grid { gap: 7px; padding-top: 12px; }
-  .macro-grid > div { min-width: 0; padding: 11px 7px; border: 1px solid #263349; border-radius: 12px; background: #02061795; color: var(--mobile-muted); font-size: 11px; }
-  .macro-grid strong { margin-top: 7px; color: var(--mobile-text); font-size: clamp(20px, 5.5vw, 25px); letter-spacing: -.7px; font-variant-numeric: tabular-nums; }
-  .macro-grid strong small { color: var(--mobile-muted); font-size: 10px; }
-  .macro-dot { width: 7px; height: 7px; margin-right: 5px; box-shadow: none; }
-  .protein { background: #10b981; }.carbs { background: #60a5fa; }.fat { background: #c084fc; }
-  .macro-grid + .field-help { margin: 16px 0 0; padding-top: 13px; border-top: 1px solid var(--mobile-line); }
-  .adaptive-card { border-color: #205843; background: linear-gradient(145deg, #0d2d26, #0f172a 70%); }
-  .adaptive-card .metric { display: block; margin: 10px 0; color: #6ee7b7; font-size: 31px; font-variant-numeric: tabular-nums; }
-  .adaptive-card .metric small { color: #a7f3d0; font-size: 12px; }
-  .adaptive-card .muted strong { color: #a7f3d0; }
-  .adaptive-card .field-help { margin: 11px 0 0; line-height: 1.55; }
-
-  .notice { margin-bottom: 14px; padding: 18px; border: 1px solid #285341; border-radius: 18px; background: #0c2923; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
-  .notice strong { color: #a7f3d0; }
-  .notice p { margin: 7px 0; color: #a5b9b1; line-height: 1.6; }
-  footer { padding: 7px 2px 14px; font-size: 11px; line-height: 1.5; }
-
-  .bottom-nav { bottom: 0; z-index: 20; width: 100%; max-width: none; padding: 7px 8px calc(7px + env(safe-area-inset-bottom)); border: 0; border-top: 1px solid #263248; border-radius: 0; background: #020617ed; box-shadow: none; -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }
-  .bottom-nav a { min-height: 52px; gap: 3px; border-radius: 11px; color: #94a3b8; font-size: 10px; font-weight: 650; }
-  .bottom-nav a:hover { transform: none; color: #94a3b8; }
-  .bottom-nav a[aria-current] { color: #34d399; background: transparent; box-shadow: none; }
-  .bottom-nav .tab-icon { width: 21px; height: 21px; }
-  .bottom-nav a[href="#/training"] .tab-icon { box-sizing: content-box; width: 23px; height: 23px; margin-top: -9px; padding: 9px; border-radius: 50%; color: #052015; background: linear-gradient(135deg, #10b981, #34d399); box-shadow: 0 5px 15px #10b98155; }
-  .bottom-nav a[href="#/training"] { color: #6ee7b7; }
-
-  .form-layout { display: block; }
-  label { margin-bottom: 17px; color: #bdc9d9; font-size: 13px; }
-  input, select { min-height: 50px; margin-top: 7px; padding: 12px 13px; border: 1px solid #334155; border-radius: 11px; color: var(--mobile-text); background: #020617; box-shadow: none; font-size: 16px; color-scheme: dark; }
-  input::placeholder { color: #64748b; }
-  input:focus, select:focus { border-color: #10b981; background: #081325; box-shadow: 0 0 0 3px #10b98126; }
-  input[type="date"] { max-width: 100%; }
-  .field-grid { gap: 0 11px; }
-  .form-actions { gap: 9px; flex-wrap: wrap; margin-top: 20px; }
-  .form-actions .primary { flex: 1; }
-  .record-form { max-width: none; }
-  .plan-preview { background: #0b2723; border-color: #205843; }
-  .preview-empty { min-height: 110px; color: var(--mobile-muted); font-size: 16px; }
-  .hero-number { color: var(--mobile-text); font-size: 42px; }
-  .details > div { padding: 14px 0; border-color: var(--mobile-line); }
-  .details dd { color: var(--mobile-text); }
-  .date-toolbar { gap: 10px; margin-bottom: 15px; }
+  .shell { max-width: 520px; padding: 0 17px 106px; }
+  .brand { position: sticky; top: 0; z-index: 15; min-height: 61px; margin: 0 -17px; padding: 0 17px; background: var(--bg); }
+  .brand a { font-size: 18px; }
+  .brand-mark { width: 30px; height: 30px; font-size: 15px; }
+  .local-badge { padding: 5px 7px; font-size: 9px; }
+  .page-heading { padding: 27px 0 20px; margin-bottom: 18px; }
+  .page-heading h1 { font-size: 36px; }
+  .page-heading .muted { font-size: 12px; }
+  .card { margin-bottom: 11px; padding: 20px; }
+  .energy-dashboard { grid-template-columns: 1fr 1fr; gap: 17px 9px; padding: 18px; border-top-width: 4px; }
+  .dashboard-intro h2 { margin: 11px 0 6px; font-size: 20px; }
+  .dashboard-intro p { max-width: 140px; font-size: 11px; }
+  .calorie-gauge { width: min(40vw, 160px); }
+  .calorie-gauge::before { inset: 7px; }
+  .calorie-gauge::after { inset: 16px; }
+  .gauge-center span, .gauge-center small, .gauge-center b { font-size: 9px; }
+  .gauge-center strong { font-size: clamp(30px, 8vw, 41px); }
+  .gauge-center b { margin-top: 6px; }
+  .dashboard-stats { grid-column: 1 / -1; margin-bottom: 11px; }
+  .dashboard-stats div { padding: 12px 10px; }
+  .dashboard-stats dd { font-size: 17px; }
+  .quick-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 13px 0 20px; }
+  .quick-actions .primary { grid-column: 1 / -1; }
+  .quick-actions a { min-width: 0; }
+  .metric-grid { gap: 9px; }
+  .metric-grid .card { padding: 16px; }
+  .metric-grid .metric { font-size: 27px; }
+  .metric-grid p { line-height: 1.45; }
+  .macro-grid > div { padding: 15px 8px; font-size: 11px; }
+  .macro-grid strong { font-size: 23px; }
+  .notice { padding: 17px; }
+  .bottom-nav { width: 100%; padding: 4px 5px calc(4px + env(safe-area-inset-bottom)); }
+  .bottom-nav a { min-height: 54px; font-size: 10px; }
+  .tab-icon { width: 20px; height: 20px; }
+  .form-layout { grid-template-columns: 1fr; gap: 0; }
+  .date-toolbar { gap: 10px; }
   .date-toolbar label { flex: 1; min-width: 0; }
-  .date-toolbar a { margin-top: 20px; }
-  .record-row { gap: 10px; padding: 17px 0; border-color: var(--mobile-line); }
-  .record-copy { width: 100%; }
-  .record-copy p, .record-copy small { color: var(--mobile-muted); }
-  .record-actions .secondary { min-height: 40px; padding: 8px 13px; }
-  .pill.light { color: #6ee7b7; border-color: #1b6148; background: #0c3027; }
-  .deleted-list summary { color: #cbd5e1; }
-  .danger, .form-error { color: #fb7185; }
-
-  .trend-controls { gap: 10px; margin-bottom: 15px; }
-  .trend-controls label { min-width: 135px; }
-  .chart-card { padding: 18px 14px; }
-  .chart-card h2 { padding: 0 4px; }
-  .chart-wrap svg { filter: none; }
-  .chart-wrap line { stroke: #334155; }
-  .chart-wrap text { fill: #94a3b8; }
-  .chart-legend { color: var(--mobile-muted); }
-  .chart-empty { background: #020617; color: var(--mobile-muted); }
-  .trend-table thead th { background: #1e293b; color: #cbd5e1; }
-  .trend-table th, .trend-table td { border-color: var(--mobile-line); }
-  .check-label input { accent-color: var(--mobile-green); }
-  .backup-message:not(:empty) { border-color: #205843; background: #0b2723; color: #a7f3d0; }
+  .record-row { align-items: flex-start; flex-wrap: wrap; gap: 9px; }
+  .record-actions { margin-left: auto; }
+  .chart-card { padding: 18px 12px; }
+  .chart-wrap svg { min-height: 160px; }
 }
-
 @media (max-width: 360px) {
   .shell { padding-left: 12px; padding-right: 12px; }
   .brand { margin-left: -12px; margin-right: -12px; padding-left: 12px; padding-right: 12px; }
-  .card { padding: 17px; }
-  .energy-dashboard { padding: 19px 16px; }
-  .dashboard-stats div { padding: 11px 9px; }
-  .metric-grid, .field-grid { grid-template-columns: 1fr; }
+  .energy-dashboard { padding: 15px; }
+  .dashboard-stats dd { font-size: 15px; }
+  .field-grid { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }

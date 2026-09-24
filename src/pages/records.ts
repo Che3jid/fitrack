@@ -9,7 +9,7 @@ import { dailySummary } from '../services/summary';
 import { escapeHtml as html } from '../utils/html';
 
 export const recordRoutes: Record<RecordKind, string> = { foods: '/diet', trainings: '/training', weights: '/weight' };
-const titles: Record<RecordKind, string> = { foods: '每一餐，都有记录。', trainings: '为每一次训练留痕。', weights: '记录体重，观察变化。' };
+const titles: Record<RecordKind, string> = { foods: '饮食记录', trainings: '训练记录', weights: '体重记录' };
 export function recordUrl(kind: RecordKind, date: string, edit = false, id?: string): string {
   const query = new URLSearchParams({ date });
   if (id) query.set('id', id);
@@ -54,7 +54,7 @@ export function recordsPage(state: AppState, kind: RecordKind, date: string, tod
       <p class="field-help">每天保留一条体重。较新的体重会同步到个人资料，并重算今日目标；补录更早的体重不覆盖较新的记录。</p></section>
       <section class="notice"><strong>删除与恢复</strong><p>删除后可在下方恢复。删除最新体重会回退到最近一条有效记录；若已无体重记录，个人资料仍保留最后已知体重。历史目标不会被重写。</p></section>`;
   }
-  return `<section class="page-heading"><p class="eyebrow">${kind === 'foods' ? '饮食' : kind === 'trainings' ? '训练' : '体重'}记录</p><h1 tabindex="-1">${titles[kind]}</h1></section>
+  return `<section class="page-heading"><p class="eyebrow">${kind === 'foods' ? '01 / NUTRITION' : kind === 'trainings' ? '02 / TRAINING' : '03 / BODY'}</p><h1 tabindex="-1">${titles[kind]}</h1></section>
     <div class="date-toolbar"><label>记录日期<input id="record-date" type="date" min="1900-01-01" max="${today}" value="${date}" required /></label>${date !== today ? `<a class="secondary" href="${recordUrl(kind, today)}">回到今天</a>` : ''}</div>
     <p id="record-error" class="form-error" role="alert"></p>${content}${deletedList(state, kind, date)}`;
 }

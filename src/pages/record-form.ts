@@ -28,7 +28,7 @@ export function recordForm(state: AppState, kind: RecordKind, date: string, toda
   } else {
     fields = `${numeric('weightKg', '体重（kg）', 30, 350, (entry as WeightEntry | undefined)?.weightKg)}<p class="field-help">每天一条，保存会替换该日期的体重。建议在相近的时间和条件下称重。</p>`;
   }
-  return `<section class="page-heading"><p class="eyebrow">${entry ? '编辑记录' : '新的记录'}</p><h1 tabindex="-1">${kind === 'foods' ? '记录这一餐' : kind === 'trainings' ? '记录这次训练' : '记录今日的你'}</h1></section>
+  return `<section class="page-heading"><p class="eyebrow">${entry ? '编辑记录' : '新增记录'}</p><h1 tabindex="-1">${kind === 'foods' ? '饮食记录' : kind === 'trainings' ? '训练记录' : '体重记录'}</h1></section>
     <form id="record-form" class="card record-form"><label>记录日期<input name="date" type="date" min="1900-01-01" max="${today}" value="${entry?.date ?? date}" ${kind === 'weights' ? 'readonly' : ''} required /></label>${fields}
       <p class="form-error" id="form-error" role="alert"></p><div class="form-actions"><button class="primary" type="submit">保存记录</button><a class="secondary" href="${recordUrl(kind, date)}">取消</a></div></form>`;
 }
