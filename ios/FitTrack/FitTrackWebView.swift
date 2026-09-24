@@ -21,8 +21,8 @@ struct FitTrackWebView: UIViewRepresentable {
 
         let webView = WKWebView(frame: .zero, configuration: configuration)
         webView.isOpaque = false
-        webView.backgroundColor = .clear
-        webView.scrollView.backgroundColor = .clear
+        webView.backgroundColor = UIColor(red: 0.008, green: 0.024, blue: 0.09, alpha: 1)
+        webView.scrollView.backgroundColor = UIColor(red: 0.008, green: 0.024, blue: 0.09, alpha: 1)
         webView.scrollView.contentInsetAdjustmentBehavior = .automatic
         webView.allowsBackForwardNavigationGestures = false
         context.coordinator.healthKitBridge.webView = webView

@@ -5,14 +5,23 @@ export const activityLabels = {
 export const goalLabels = { lose: '减脂', maintain: '维持', gain: '增肌' };
 export const number = (value: number): string => Math.round(value).toLocaleString('zh-CN');
 export const decimal = (value: number): string => value.toLocaleString('zh-CN', { maximumFractionDigits: 1 });
+const tabIcons = {
+  today: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  diet: '<path d="M4 3v7a3 3 0 0 0 6 0V3M7 3v18M16 21V3c3 2 4 5 4 9h-4v9"/>',
+  training: '<path d="M3 9v6m3-8v10m3-7v4m6-4v4m3-7v10m3-8v6M9 12h6"/>',
+  trends: '<path d="M3 17l6-6 4 4 8-8M16 7h5v5"/>',
+  profile: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+} as const;
+const tab = (page: keyof typeof tabIcons, label: string, active: string) =>
+  `<a href="#/${page}" ${active === page ? 'aria-current="page"' : ''}><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${tabIcons[page]}</svg><span>${label}</span></a>`;
 export function layout(content: string, active: 'today' | 'profile' | 'onboarding' | 'diet' | 'training' | 'trends'): string {
-  return `<div class="shell"><header class="brand"><a href="#/today"><span class="brand-mark" aria-hidden="true">F</span>FitTrack</a><span class="local-badge">本地记录</span></header>
+  return `<div class="shell page-${active}"><header class="brand"><a href="#/today"><span class="brand-mark" aria-hidden="true">F</span><span class="brand-name">Fit<span>Track</span></span></a><span class="local-badge">本地记录</span></header>
     <main id="main">${content}</main><footer>数据仅保存在当前浏览器 · 清除网站数据会丢失记录</footer>
     ${active === 'onboarding' ? '' : `<nav class="bottom-nav" aria-label="主导航">
-      <a href="#/today" ${active === 'today' ? 'aria-current="page"' : ''}>◉ <span>今日</span></a>
-      <a href="#/diet" ${active === 'diet' ? 'aria-current="page"' : ''}>▤ <span>饮食</span></a>
-      <a href="#/training" ${active === 'training' ? 'aria-current="page"' : ''}>◇ <span>训练</span></a>
-      <a href="#/trends" ${active === 'trends' ? 'aria-current="page"' : ''}>↗ <span>趋势</span></a>
-      <a href="#/profile" ${active === 'profile' ? 'aria-current="page"' : ''}>◎ <span>我的</span></a>
+      ${tab('today', '今日', active)}
+      ${tab('diet', '饮食', active)}
+      ${tab('training', '训练', active)}
+      ${tab('trends', '趋势', active)}
+      ${tab('profile', '我的', active)}
     </nav>`}</div>`;
 }

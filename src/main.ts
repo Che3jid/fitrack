@@ -1,4 +1,5 @@
 import './styles/global.css';
+import './styles/iphone.css';
 import { layout } from './components/layout';
 import { profilePage } from './pages/profile';
 import { bindProfileForm, profileForm } from './pages/profile-form';
@@ -16,6 +17,7 @@ import { buildTrends } from './services/trends';
 import { trendsPage, bindTrends } from './pages/trends';
 import { BackupService } from './services/backup';
 import { backupPage, bindBackup } from './pages/backup';
+import { adaptiveRecommendation } from './services/recommendations';
 
 const root = document.querySelector<HTMLDivElement>('#app');
 if (!root) throw new Error('FitTrack root element is missing');
@@ -80,7 +82,7 @@ async function render(): Promise<void> {
       app.innerHTML = layout(profilePage(state.profile), 'profile');
       document.title = '我的 · FitTrack';
     } else {
-      app.innerHTML = layout(todayPage(dailySummary(state, shownDate), shownDate), 'today');
+      app.innerHTML = layout(todayPage(dailySummary(state, shownDate), shownDate, adaptiveRecommendation(state, shownDate)), 'today');
       document.title = '今日 · FitTrack';
     }
     app.querySelector<HTMLElement>('h1')?.focus({ preventScroll: true });
