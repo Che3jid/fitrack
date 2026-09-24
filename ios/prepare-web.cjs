@@ -16,4 +16,8 @@ if (/\bimport\s*(?:\(|[\w*{])|\bexport\s+(?:default|const|function|class|\{)|imp
   throw new Error('The web build contains ES module syntax and cannot be converted to a classic script');
 }
 
-fs.writeFileSync(indexPath, html.replace(moduleScript, '<script defer src="$1"></script>'));
+const classicHtml = html
+  .replace(moduleScript, '<script defer src="$1"></script>')
+  .replace(/(<link rel="stylesheet") crossorigin(?= href="\.\/assets\/[^\"]+\.css")/g, '$1');
+
+fs.writeFileSync(indexPath, classicHtml);
