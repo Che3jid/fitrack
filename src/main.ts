@@ -18,6 +18,7 @@ import { trendsPage, bindTrends } from './pages/trends';
 import { BackupService } from './services/backup';
 import { backupPage, bindBackup } from './pages/backup';
 import { adaptiveRecommendation } from './services/recommendations';
+import { animateView, stopMotion } from './ui/motion';
 
 const root = document.querySelector<HTMLDivElement>('#app');
 if (!root) throw new Error('FitTrack root element is missing');
@@ -87,8 +88,10 @@ async function render(): Promise<void> {
     }
     app.querySelector<HTMLElement>('h1')?.focus({ preventScroll: true });
     window.scrollTo(0, 0);
+    animateView(app, route);
   } catch (cause) {
     if (current !== generation) return;
+    stopMotion();
     app.innerHTML = layout('<section class="card error-panel"><h1>暂时无法读取数据</h1><p id="load-error" role="alert"></p><button class="primary" id="retry">重新尝试</button></section>', 'onboarding');
     app.querySelector('#load-error')!.textContent = cause instanceof Error ? cause.message : '读取失败，请重试。';
     app.querySelector('#retry')!.addEventListener('click', () => { void render(); });

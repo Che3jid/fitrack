@@ -27,6 +27,7 @@ GitHub 仓库：[Che3jid/fitrack](https://github.com/Che3jid/fitrack)。产品�
 - HTML + CSS + 严格模式 TypeScript，无 UI 框架。
 - [Vite](https://vite.dev/guide/)：开发服务器和生产构建。
 - [Vitest](https://vitest.dev/guide/)：纯计算模块单元测试。
+- [GSAP](https://gsap.com/docs/v3/GSAP/)：页面进入、热量仪表和按键反馈；遵循系统“减少动态效果”设置。
 - Git / GitHub：版本控制；CI 在后续阶段配置。
 - IndexedDB：按资料、食物、训练、体重、每日状态和目标快照分集合保存，以事务保证一次更新完整写入；业务服务只依赖异步存储接口。
 - SwiftUI + WKWebView：提供原生 iPhone App 外壳，并在构建时把网页产物打包进 App。
@@ -162,4 +163,4 @@ TDEE = BMR × 活动系数
 
 提交变更前运行 `npm run check`。计算规则变更需同步测试、文档和计算版本；业务公式不要放进界面事件处理函数。不要提交个人饮食记录、导出备份或凭证。
 
-本项目使用 [MIT License](LICENSE)。
+本项目自身代码使用 [MIT License](LICENSE)。GSAP 是独立依赖，遵循其 [Standard “No Charge” License](https://gsap.com/community/standard-license/)。
