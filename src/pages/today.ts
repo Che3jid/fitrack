@@ -36,7 +36,7 @@ export function todayPage(summary: ReturnType<typeof dailySummary>, date: string
     </div>
     <section class="card energy-dashboard" aria-label="今日热量仪表盘">
       <div class="dashboard-intro"><span class="pill">${goalLabels[plan.profileSnapshot.goal]}计划</span><h2>热量进度</h2><p>${status}</p></div>
-      <div class="calorie-gauge" role="img" aria-label="${gaugeLabel}" style="--gauge-progress: ${progress}%">
+      <div class="calorie-gauge" role="img" aria-label="${gaugeLabel}" style="--gauge-target: ${progress}%">
         <div class="gauge-center"><span>已摄入</span><strong>${nutrition ? number(consumedKcal) : '—'}</strong><small>/ ${number(plan.targetKcal)} kcal</small><b>${progressLabel}</b></div>
       </div>
       <dl class="dashboard-stats">
