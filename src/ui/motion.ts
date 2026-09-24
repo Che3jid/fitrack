@@ -42,8 +42,23 @@ export function animateView(root: HTMLElement, route: string): void {
 
     if (gauge && targetGauge !== startGauge) {
       gsap.fromTo(gauge, { '--gauge-progress': `${startGauge}%` }, {
-        '--gauge-progress': `${targetGauge}%`, duration: .78, ease: 'steps(18)', delay: sameRoute ? 0 : .13,
+        '--gauge-progress': `${targetGauge}%`, duration: .95, ease: 'power2.out', delay: sameRoute ? 0 : .13,
       });
+    }
+    if (gauge) {
+      const glow = gauge.querySelector<HTMLElement>('.gauge-glow');
+      const sweep = gauge.querySelector<HTMLElement>('.gauge-sweep');
+      const center = gauge.querySelector<HTMLElement>('.gauge-center');
+      if (glow) {
+        gsap.fromTo(glow, { autoAlpha: .15, scale: .92 }, { autoAlpha: .8, scale: 1, duration: .9, ease: 'power2.out' });
+        gsap.timeline({ repeat: -1, delay: 1, repeatDelay: .25 })
+          .to(glow, { opacity: 1, scale: 1.035, duration: 2.2, ease: 'sine.inOut' })
+          .to(glow, { opacity: .68, scale: 1, duration: 2.2, ease: 'sine.inOut' });
+      }
+      if (sweep) gsap.timeline({ delay: .13 })
+        .fromTo(sweep, { rotation: -110, opacity: 0 }, { rotation: 250, opacity: .8, duration: 1.25, ease: 'power2.inOut' })
+        .to(sweep, { opacity: 0, duration: .22 }, '-=.22');
+      if (center) gsap.fromTo(center, { autoAlpha: .7, scale: .95 }, { autoAlpha: 1, scale: 1, duration: .55, delay: .4, ease: 'back.out(1.35)' });
     }
 
     const pressable = '.primary, .secondary, .bottom-nav a';
