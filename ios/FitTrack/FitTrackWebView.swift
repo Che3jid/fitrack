@@ -55,7 +55,7 @@ struct FitTrackWebView: UIViewRepresentable {
 
     private static let missingBuildPage = """
     <!doctype html><meta name="viewport" content="width=device-width,initial-scale=1">
-    <style>body{font:17px -apple-system;padding:48px 24px;color:#181a19;background:#d1d1cd}main{max-width:520px;margin:auto;background:#e5e5e1;padding:28px;border:1px solid #a9aba7;border-radius:18px}code{word-break:break-all;color:#a97124}</style>
+    <style>body{font:17px "PingFang SC","PingFang TC",sans-serif;padding:48px 24px;color:#181a19;background:#d1d1cd}main{max-width:520px;margin:auto;background:#e5e5e1;padding:28px;border:1px solid #a9aba7;border-radius:18px}code{font-family:inherit;word-break:break-all;color:#a97124}</style>
     <main><h1>FitTrack 网页资源尚未生成</h1><p>回到项目根目录运行 <code>npm ci</code>，然后重新在 Xcode 构建。Xcode 会自动执行 <code>npm run build</code> 并复制网页资源。</p></main>
     """
 }
