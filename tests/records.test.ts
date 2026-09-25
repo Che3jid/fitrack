@@ -35,6 +35,13 @@ describe('food records and completeness', () => {
     expect(summary.nutrition).toEqual({ energyKcal: 165, proteinG: 31, carbsG: 0, fatG: 3.6 });
     expect(dailySummary(await repo.read(), '2026-09-21').nutrition).toBeNull();
   });
+  it('persists optional sodium and rejects invalid sodium', async () => {
+    const { records, repo } = await setup();
+    const saved = await records.saveFood({ ...food, sodiumMg: 840 });
+    expect(saved.foods[0]?.sodiumMg).toBe(840);
+    expect((await repo.read()).foods[0]?.sodiumMg).toBe(840);
+    await expect(records.saveFood({ ...food, sodiumMg: -1 })).rejects.toThrow();
+  });
   it('edits a record in place and moves it to another meal and date', async () => {
     const { records } = await setup();
     const before = await records.saveFood(food);

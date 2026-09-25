@@ -9,6 +9,7 @@ export interface FoodInput extends Nutrition {
   mealType: MealType;
   name: string;
   weightG: number;
+  sodiumMg?: number;
 }
 export interface TrainingInput {
   date: string;
@@ -35,6 +36,7 @@ export function validateFood(input: FoodInput): void {
   range(input.weightG, 0.1, 10000, '食用重量（g）');
   range(input.energyKcal, 0, 50000, '热量（kcal）');
   for (const key of ['proteinG', 'carbsG', 'fatG'] as const) range(input[key], 0, 10000, '营养素（g）');
+  if (input.sodiumMg !== undefined) range(input.sodiumMg, 0, 100_000, '钠（mg）');
 }
 export function validateTraining(input: TrainingInput): void {
   validateRecordDate(input.date);

@@ -39,6 +39,8 @@ export interface FoodEntry extends Entity, Nutrition {
   mealType: MealType;
   name: string;
   weightG: number;
+  /** Optional because older and manually entered records may not know sodium. */
+  sodiumMg?: number;
 }
 
 export interface TrainingEntry extends Entity {

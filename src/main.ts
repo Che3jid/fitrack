@@ -21,6 +21,9 @@ import { adaptiveRecommendation } from './services/recommendations';
 import { animateView, stopMotion } from './ui/motion';
 import { SyncService } from './services/sync';
 import { bindSync, syncPage } from './pages/sync';
+import { bindFoodLibrary, foodLibraryPage } from './pages/food-library';
+import { MEALS } from './domain/records';
+import type { MealType } from './domain/models';
 
 const root = document.querySelector<HTMLDivElement>('#app');
 if (!root) throw new Error('FitTrack root element is missing');
@@ -45,7 +48,7 @@ async function render(): Promise<void> {
     const params = new URLSearchParams(query);
     let route = path || '/today';
     if (!state.profile && route !== '/backup' && route !== '/sync') route = '/onboarding';
-    else if (!['/today', '/profile', '/profile/edit', '/diet', '/diet/edit', '/training', '/training/edit', '/weight', '/weight/edit', '/trends', '/backup', '/sync', '/onboarding'].includes(route)) route = '/today';
+    else if (!['/today', '/profile', '/profile/edit', '/diet', '/diet/edit', '/library', '/training', '/training/edit', '/weight', '/weight/edit', '/trends', '/backup', '/sync', '/onboarding'].includes(route)) route = '/today';
     if (state.profile && route === '/onboarding') route = '/today';
     if (route !== path) history.replaceState(null, '', `#${route}`);
     const editing = route === '/profile/edit';
@@ -58,6 +61,14 @@ async function render(): Promise<void> {
       app.innerHTML = layout(backupPage(state), state.profile ? 'profile' : 'onboarding');
       bindBackup(app, backups, state, render);
       document.title = '数据备份 · FitTrack';
+    } else if (route === '/library') {
+      let date = params.get('date') ?? shownDate;
+      try { validateRecordDate(date, shownDate); } catch { date = shownDate; }
+      const requestedMeal = params.get('meal') ?? 'breakfast';
+      const meal = Object.hasOwn(MEALS, requestedMeal) ? requestedMeal as MealType : 'breakfast';
+      app.innerHTML = layout(foodLibraryPage(date, shownDate, meal), 'diet');
+      bindFoodLibrary(app, records);
+      document.title = '食材与配方 · FitTrack';
     } else if (route === '/trends') {
       const requested = Number(params.get('days') ?? 30);
       const days = [7, 30, 90].includes(requested) ? requested : 30;

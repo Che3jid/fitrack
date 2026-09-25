@@ -31,17 +31,21 @@ export function recordsPage(state: AppState, kind: RecordKind, date: string, tod
   let content = '';
   if (kind === 'foods') {
     const total = summary.nutrition;
+    const knownSodium = summary.foods.filter((entry) => entry.sodiumMg !== undefined);
+    const sodiumMg = knownSodium.reduce((sum, entry) => sum + entry.sodiumMg!, 0);
     content = `<section class="card"><div class="section-heading"><h2>当日摄入</h2><span class="pill light">${summary.completed ? '已完成' : total ? '记录中' : '尚无记录'}</span></div>
       <strong class="metric">${total ? number(total.energyKcal) : '—'} <small>kcal</small></strong>
       <p class="muted">蛋白质 ${total ? decimal(total.proteinG) : '—'} g · 碳水 ${total ? decimal(total.carbsG) : '—'} g · 脂肪 ${total ? decimal(total.fatG) : '—'} g</p>
+      <p class="muted">${knownSodium.length ? `已知钠 ${number(sodiumMg)} mg · 约合盐 ${decimal(sodiumMg * 2.5 / 1000)} g${knownSodium.length < summary.foods.length ? '（部分记录无钠数据）' : ''}` : '钠摄入：暂无可计算记录'}</p>
+      <a class="secondary" href="#/library?${new URLSearchParams({ date, meal: 'breakfast' })}">用食材配方计算一餐</a>
       <button class="secondary" data-action="completion">${summary.completed ? '改为记录中' : '标记当日记录完成'}</button>
       <p class="field-help">${summary.completed ? '修改、删除或恢复食物后，会重新标记为记录中。' : '确认已录入当天所有饮食后再标记完成。无食物记录时，标记完成代表当天摄入为 0。'}</p></section>`;
     for (const [meal, label] of Object.entries(MEALS)) {
       const foods = summary.foods.filter((entry) => entry.mealType === meal);
       const kcal = sumNutrition(foods).energyKcal;
       content += `<section class="card"><div class="section-heading"><h2>${label}</h2><span class="muted">${foods.length ? number(kcal) + ' kcal' : '未记录'}</span></div>
-        ${foods.length ? foods.map((entry) => `<article class="record-row"><div class="record-copy"><strong>${html(entry.name)}</strong><p>${entry.weightG} g · ${number(entry.energyKcal)} kcal</p><small>蛋白质 ${entry.proteinG} g / 碳水 ${entry.carbsG} g / 脂肪 ${entry.fatG} g</small></div>${actions(kind, date, entry)}</article>`).join('') : '<p class="empty-copy">还没有食物记录</p>'}
-        <a class="text-link" href="${recordUrl(kind, date, true)}&meal=${meal}">＋ 添加${label}</a></section>`;
+        ${foods.length ? foods.map((entry) => `<article class="record-row"><div class="record-copy"><strong>${html(entry.name)}</strong><p>${entry.weightG} g · ${number(entry.energyKcal)} kcal</p><small>蛋白质 ${entry.proteinG} g / 碳水 ${entry.carbsG} g / 脂肪 ${entry.fatG} g${entry.sodiumMg === undefined ? '' : ` / 钠 ${number(entry.sodiumMg)} mg`}</small></div>${actions(kind, date, entry)}</article>`).join('') : '<p class="empty-copy">还没有食物记录</p>'}
+        <a class="text-link" href="${recordUrl(kind, date, true)}&meal=${meal}">＋ 手动添加${label}</a> · <a class="text-link" href="#/library?${new URLSearchParams({ date, meal })}">按食材计算</a></section>`;
     }
   } else if (kind === 'trainings') {
     content = `<section class="card"><h2>当日训练</h2><strong class="metric">${summary.trainingMinutes} <small>分钟</small></strong><p class="muted">估算消耗 ${number(summary.trainingKcal)} kcal · ${summary.trainings.length} 次训练</p><p class="field-help">训练消耗单独展示，不重复叠加到 TDEE，也不自动增加饮食目标。</p></section>

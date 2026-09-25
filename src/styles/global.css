@@ -156,3 +156,26 @@ dd { margin: 0; text-align: right; font-weight: 700; overflow-wrap: anywhere; }
 #backup-file { max-width: 100%; padding: 11px; font-size: 13px; }
 #backup-filename { overflow-wrap: anywhere; }
 .error-panel { margin-top: 40px; }
+.recipe-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; gap: 16px; }
+.recipe-layout > * { min-width: 0; }
+.catalog-list { max-height: 560px; overflow-y: auto; border-top: 1px solid #aeb3ac; border-bottom: 1px solid #aeb3ac; }
+.catalog-food { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 11px 0; border-bottom: 1px solid #c4c8c0; }
+.catalog-food:last-child { border-bottom: 0; }
+.catalog-food[hidden], #catalog-empty[hidden] { display: none; }
+.catalog-food strong, .catalog-food small { display: block; }
+.catalog-food strong { font-size: 13px; }
+.catalog-food small { margin-top: 4px; color: var(--muted); font-size: 11px; line-height: 1.45; }
+.catalog-actions { display: flex; flex: none; align-items: center; gap: 8px; }
+.catalog-actions a { font: 700 10px ui-monospace, SFMono-Regular, monospace; }
+.catalog-actions .secondary { min-height: 34px; padding: 7px 10px; }
+.recipe-lines { margin: 8px 0 24px; border-top: 1px solid #b6b9b3; }
+.recipe-line { display: grid; grid-template-columns: minmax(0, 1fr) 112px auto; align-items: center; gap: 8px; padding: 9px 0; border-bottom: 1px solid #c4c8c0; font-size: 13px; }
+.recipe-line span { overflow-wrap: anywhere; }
+.recipe-line label { display: flex; align-items: center; gap: 4px; margin: 0; font-size: 12px; }
+.recipe-line input { min-height: 38px; margin: 0; padding: 6px 7px; font-size: 14px; }
+.recipe-result { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
+.recipe-result > div { padding: 16px; border: 1px solid #9ca39a; border-radius: 12px; background: #e4e7df; }
+.recipe-result span, .recipe-result small { display: block; color: var(--muted); font-size: 11px; }
+.recipe-result strong { display: block; margin: 9px 0 5px; font-size: clamp(25px, 3vw, 36px); line-height: 1.1; font-variant-numeric: tabular-nums; }
+.recipe-result strong small { display: inline; font-size: 12px; }
+.recipe-result p { grid-column: 1 / -1; margin: 0; padding: 12px 14px; color: #3d4840; background: #d5ddd2; border-radius: 10px; font-size: 12px; line-height: 1.6; }

@@ -46,7 +46,8 @@ export function validateServerState(value) {
       if (name === 'foods' && (!oneOf(row.mealType, ['breakfast', 'lunch', 'dinner', 'snack'])
         || !label(row.name) || !bounded(row.weightG, 0.1, 10_000)
         || !bounded(row.energyKcal, 0, 50_000)
-        || !['proteinG', 'carbsG', 'fatG'].every((key) => bounded(row[key], 0, 10_000)))) throw new Error('饮食记录无效');
+        || !['proteinG', 'carbsG', 'fatG'].every((key) => bounded(row[key], 0, 10_000))
+        || (row.sodiumMg !== undefined && !bounded(row.sodiumMg, 0, 100_000)))) throw new Error('饮食记录无效');
       if (name === 'trainings' && (!label(row.exerciseType) || !bounded(row.durationMin, 1, 1440)
         || !bounded(row.estimatedKcal, 0, 50_000) || row.estimateSource !== 'manual')) throw new Error('训练记录无效');
       if (name === 'days' && typeof row.dietCompleted !== 'boolean') throw new Error('完成状态无效');

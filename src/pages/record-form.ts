@@ -20,7 +20,7 @@ export function recordForm(state: AppState, kind: RecordKind, date: string, toda
     fields = `<label>餐次<select name="mealType">${Object.entries(MEALS).map(([value, label]) => `<option value="${value}" ${(food?.mealType ?? meal) === value ? 'selected' : ''}>${label}</option>`).join('')}</select></label>
       <label>食物名称<input name="name" type="text" maxlength="80" required value="${html(food?.name ?? '')}" placeholder="例如 鸡胸肉" /></label>
       <p class="field-help">以下全部填写本次实际食用份量的总值，不是每 100 g 的数值。修改重量不会自动换算营养数据。</p>
-      <div class="field-grid">${numeric('weightG', '食用重量（g）', 0.1, 10000, food?.weightG)}${numeric('energyKcal', '热量（kcal）', 0, 50000, food?.energyKcal)}${numeric('proteinG', '蛋白质（g）', 0, 10000, food?.proteinG)}${numeric('carbsG', '碳水（g）', 0, 10000, food?.carbsG)}${numeric('fatG', '脂肪（g）', 0, 10000, food?.fatG)}</div>`;
+      <div class="field-grid">${numeric('weightG', '食用重量（g）', 0.1, 10000, food?.weightG)}${numeric('energyKcal', '热量（kcal）', 0, 50000, food?.energyKcal)}${numeric('proteinG', '蛋白质（g）', 0, 10000, food?.proteinG)}${numeric('carbsG', '碳水（g）', 0, 10000, food?.carbsG)}${numeric('fatG', '脂肪（g）', 0, 10000, food?.fatG)}<label>钠（mg，可选）<input name="sodiumMg" type="number" inputmode="decimal" min="0" max="100000" step="any" value="${food?.sodiumMg ?? ''}" /></label></div>`;
   } else if (kind === 'trainings') {
     const training = entry as TrainingEntry | undefined;
     fields = `<label>运动类型<input name="exerciseType" type="text" maxlength="80" required value="${html(training?.exerciseType ?? '')}" placeholder="例如 力量训练、跑步" /></label>
@@ -46,7 +46,7 @@ export function bindRecordForm(root: HTMLElement, service: RecordService, kind: 
     const num = (key: string) => text(key).trim() === '' ? NaN : Number(text(key));
     const date = text('date');
     try {
-      if (kind === 'foods') await service.saveFood({ date, mealType: text('mealType') as MealType, name: text('name'), weightG: num('weightG'), energyKcal: num('energyKcal'), proteinG: num('proteinG'), carbsG: num('carbsG'), fatG: num('fatG') }, id);
+      if (kind === 'foods') await service.saveFood({ date, mealType: text('mealType') as MealType, name: text('name'), weightG: num('weightG'), energyKcal: num('energyKcal'), proteinG: num('proteinG'), carbsG: num('carbsG'), fatG: num('fatG'), ...(text('sodiumMg').trim() === '' ? {} : { sodiumMg: num('sodiumMg') }) }, id);
       else if (kind === 'trainings') await service.saveTraining({ date, exerciseType: text('exerciseType'), durationMin: num('durationMin'), estimatedKcal: num('estimatedKcal') }, id);
       else await service.saveWeight({ date, weightKg: num('weightKg') });
       location.hash = recordUrl(kind, date).slice(1);

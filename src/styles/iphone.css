@@ -41,6 +41,12 @@
   .date-toolbar { gap: 10px; }
   .date-toolbar label { flex: 1; min-width: 0; }
   .record-row { align-items: flex-start; flex-wrap: wrap; gap: 9px; }
+  .recipe-layout { grid-template-columns: 1fr; gap: 0; }
+  .recipe-panel .field-grid { grid-template-columns: 1fr; }
+  .catalog-list { max-height: 330px; }
+  .catalog-food { gap: 8px; }
+  .recipe-result strong { font-size: 27px; }
+  .recipe-line { grid-template-columns: minmax(0, 1fr) 96px auto; }
   .record-actions { margin-left: auto; }
   .chart-card { padding: 18px 12px; }
   .chart-wrap svg { min-height: 160px; }

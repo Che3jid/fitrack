@@ -44,6 +44,7 @@ export class RecordService {
         ...this.metadata(profile, now, existing), date: input.date, mealType: input.mealType,
         name: input.name.trim(), weightG: input.weightG, energyKcal: input.energyKcal,
         proteinG: input.proteinG, carbsG: input.carbsG, fatG: input.fatG,
+        ...(input.sodiumMg === undefined ? {} : { sodiumMg: input.sodiumMg }),
       };
       state.foods = [...state.foods.filter((entry) => entry.id !== food.id), food];
       this.reopenDays(state, [input.date, existing?.date ?? input.date], now);
