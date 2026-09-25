@@ -24,6 +24,7 @@ import { bindSync, syncPage } from './pages/sync';
 import { bindFoodLibrary, foodLibraryPage } from './pages/food-library';
 import { MEALS } from './domain/records';
 import type { MealType } from './domain/models';
+import { bindExercises, exercisesPage } from './pages/exercises';
 
 const root = document.querySelector<HTMLDivElement>('#app');
 if (!root) throw new Error('FitTrack root element is missing');
@@ -48,7 +49,7 @@ async function render(): Promise<void> {
     const params = new URLSearchParams(query);
     let route = path || '/today';
     if (!state.profile && route !== '/backup' && route !== '/sync') route = '/onboarding';
-    else if (!['/today', '/profile', '/profile/edit', '/diet', '/diet/edit', '/library', '/training', '/training/edit', '/weight', '/weight/edit', '/trends', '/backup', '/sync', '/onboarding'].includes(route)) route = '/today';
+    else if (!['/today', '/profile', '/profile/edit', '/diet', '/diet/edit', '/library', '/training', '/training/edit', '/exercises', '/weight', '/weight/edit', '/trends', '/backup', '/sync', '/onboarding'].includes(route)) route = '/today';
     if (state.profile && route === '/onboarding') route = '/today';
     if (route !== path) history.replaceState(null, '', `#${route}`);
     const editing = route === '/profile/edit';
@@ -69,6 +70,12 @@ async function render(): Promise<void> {
       app.innerHTML = layout(foodLibraryPage(date, shownDate, meal), 'diet');
       bindFoodLibrary(app, records);
       document.title = '食材与配方 · FitTrack';
+    } else if (route === '/exercises') {
+      let date = params.get('date') ?? shownDate;
+      try { validateRecordDate(date, shownDate); } catch { date = shownDate; }
+      app.innerHTML = layout(exercisesPage(), 'training');
+      bindExercises(app, date);
+      document.title = '力量动作库 · FitTrack';
     } else if (route === '/trends') {
       const requested = Number(params.get('days') ?? 30);
       const days = [7, 30, 90].includes(requested) ? requested : 30;
@@ -83,7 +90,7 @@ async function render(): Promise<void> {
       const id = params.get('id') ?? undefined;
       const active = kind === 'foods' ? 'diet' : kind === 'trainings' ? 'training' : 'profile';
       if (route.endsWith('/edit')) {
-        app.innerHTML = layout(recordForm(state, kind, date, shownDate, id, params.get('meal') ?? 'breakfast'), active);
+        app.innerHTML = layout(recordForm(state, kind, date, shownDate, id, params.get('meal') ?? 'breakfast', params.get('exerciseId') ?? undefined), active);
         bindRecordForm(app, records, kind, id);
       } else {
         app.innerHTML = layout(recordsPage(state, kind, date, shownDate), active);

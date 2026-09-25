@@ -3,6 +3,7 @@ import { dirname } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
 
 const catalogSeed = JSON.parse(readFileSync(new URL('../src/data/food-catalog.json', import.meta.url), 'utf8'));
+const exerciseSeed = JSON.parse(readFileSync(new URL('../src/data/exercise-catalog.json', import.meta.url), 'utf8'));
 
 const COLLECTIONS = ['plans', 'weights', 'foods', 'trainings', 'days'];
 const dated = /^\d{4}-\d{2}-\d{2}$/;
@@ -81,6 +82,7 @@ export function openDatabase(path) {
       energy_kcal REAL NOT NULL, protein_g REAL NOT NULL, carbs_g REAL NOT NULL,
       fat_g REAL NOT NULL, sodium_mg REAL NOT NULL
     );
+    CREATE TABLE IF NOT EXISTS catalog_exercises (id TEXT PRIMARY KEY, row_json TEXT NOT NULL);
     CREATE INDEX IF NOT EXISTS foods_date ON foods(date);
     CREATE INDEX IF NOT EXISTS trainings_date ON trainings(date);
     CREATE INDEX IF NOT EXISTS catalog_foods_group_name ON catalog_foods(food_group, name);
@@ -88,6 +90,7 @@ export function openDatabase(path) {
   const seedFood = db.prepare(`INSERT OR IGNORE INTO catalog_foods
     (id, name, food_group, fdc_id, energy_kcal, protein_g, carbs_g, fat_g, sodium_mg)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`);
+  const seedExercise = db.prepare('INSERT OR IGNORE INTO catalog_exercises (id, row_json) VALUES (?, ?)');
   db.exec('BEGIN IMMEDIATE');
   try {
     for (const food of catalogSeed) {
@@ -95,6 +98,7 @@ export function openDatabase(path) {
       seedFood.run(food.id, food.name, food.group, food.fdcId, nutrients.energyKcal,
         nutrients.proteinG, nutrients.carbsG, nutrients.fatG, nutrients.sodiumMg);
     }
+    for (const exercise of exerciseSeed) seedExercise.run(exercise.id, JSON.stringify(exercise));
     db.exec('COMMIT');
   } catch (error) {
     db.exec('ROLLBACK');
@@ -105,6 +109,7 @@ export function openDatabase(path) {
     energy_kcal AS energyKcal, protein_g AS proteinG, carbs_g AS carbsG,
     fat_g AS fatG, sodium_mg AS sodiumMg FROM catalog_foods
     ORDER BY CASE food_group WHEN '食材' THEN 0 WHEN '调味料' THEN 1 ELSE 2 END, name`);
+  const exerciseQuery = db.prepare('SELECT row_json FROM catalog_exercises ORDER BY id');
   const revisionQuery = db.prepare("SELECT value FROM meta WHERE key = 'revision'");
   const profileQuery = db.prepare('SELECT row_json FROM profiles LIMIT 1');
   const queries = Object.fromEntries(COLLECTIONS.map((name) => [name, db.prepare(`SELECT row_json FROM ${name} ORDER BY date, id`)]));
@@ -151,5 +156,9 @@ export function openDatabase(path) {
     }));
   }
 
-  return { read, readCatalog, replace, close: () => db.close() };
+  function readExerciseCatalog() {
+    return exerciseQuery.all().map((row) => JSON.parse(row.row_json));
+  }
+
+  return { read, readCatalog, readExerciseCatalog, replace, close: () => db.close() };
 }

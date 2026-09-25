@@ -49,7 +49,7 @@ export function recordsPage(state: AppState, kind: RecordKind, date: string, tod
     }
   } else if (kind === 'trainings') {
     content = `<section class="card"><h2>当日训练</h2><strong class="metric">${summary.trainingMinutes} <small>分钟</small></strong><p class="muted">估算消耗 ${number(summary.trainingKcal)} kcal · ${summary.trainings.length} 次训练</p><p class="field-help">训练消耗单独展示，不重复叠加到 TDEE，也不自动增加饮食目标。</p></section>
-      <section class="card"><div class="section-heading"><h2>训练记录</h2><a class="secondary" href="${recordUrl(kind, date, true)}">添加训练</a></div>
+      <section class="card"><div class="section-heading"><h2>训练记录</h2><a class="secondary" href="${recordUrl(kind, date, true)}">添加训练</a></div><p><a class="text-link" href="#/exercises?${new URLSearchParams({ date })}">浏览力量动作库 →</a></p>
       ${summary.trainings.length ? summary.trainings.map((entry) => `<article class="record-row"><div class="record-copy"><strong>${html(entry.exerciseType)}</strong><p>${entry.durationMin} 分钟 · ${number(entry.estimatedKcal)} kcal</p><small>消耗由你手动估算</small></div>${actions(kind, date, entry)}</article>`).join('') : '<p class="empty-copy">这一天还没有训练记录。休息也是计划的一部分。</p>'}</section>`;
   } else {
     const weight = summary.weight;

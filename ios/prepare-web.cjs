@@ -1,5 +1,6 @@
 const fs = require('node:fs');
 const path = require('node:path');
+const vm = require('node:vm');
 
 const indexPath = process.argv[2];
 if (!indexPath) throw new Error('Missing bundled index.html path');
@@ -12,8 +13,11 @@ if (matches.length !== 1) {
 }
 
 const bundledScript = fs.readFileSync(path.resolve(path.dirname(indexPath), matches[0][1]), 'utf8');
-if (/\bimport\s*(?:\(|[\w*{])|\bexport\s+(?:default|const|function|class|\{)|import\.meta/.test(bundledScript)) {
-  throw new Error('The web build contains ES module syntax and cannot be converted to a classic script');
+try {
+  // Parse as a classic script; regexes also match exercise instructions inside JSON strings.
+  new vm.Script(bundledScript);
+} catch (error) {
+  throw new Error('The web build cannot run as a classic script', { cause: error });
 }
 
 const classicHtml = html

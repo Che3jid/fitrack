@@ -5,11 +5,12 @@ import type { RecordKind } from '../services/records';
 import { RecordService } from '../services/records';
 import { escapeHtml as html } from '../utils/html';
 import { recordUrl } from './records';
+import { exerciseCatalog } from '../data/exercises';
 
 function numeric(name: string, label: string, min: number, max: number, value?: number): string {
   return `<label>${label}<input name="${name}" type="number" inputmode="decimal" min="${min}" max="${max}" step="any" value="${value ?? ''}" required /></label>`;
 }
-export function recordForm(state: AppState, kind: RecordKind, date: string, today: string, id?: string, meal = 'breakfast'): string {
+export function recordForm(state: AppState, kind: RecordKind, date: string, today: string, id?: string, meal = 'breakfast', exerciseId?: string): string {
   let entry: FoodEntry | TrainingEntry | WeightEntry | undefined;
   if (kind === 'weights') entry = state.weights.find((item) => item.date === date && !item.deletedAt);
   else if (id) entry = state[kind].find((item) => item.id === id && !item.deletedAt);
@@ -23,7 +24,8 @@ export function recordForm(state: AppState, kind: RecordKind, date: string, toda
       <div class="field-grid">${numeric('weightG', '食用重量（g）', 0.1, 10000, food?.weightG)}${numeric('energyKcal', '热量（kcal）', 0, 50000, food?.energyKcal)}${numeric('proteinG', '蛋白质（g）', 0, 10000, food?.proteinG)}${numeric('carbsG', '碳水（g）', 0, 10000, food?.carbsG)}${numeric('fatG', '脂肪（g）', 0, 10000, food?.fatG)}<label>钠（mg，可选）<input name="sodiumMg" type="number" inputmode="decimal" min="0" max="100000" step="any" value="${food?.sodiumMg ?? ''}" /></label></div>`;
   } else if (kind === 'trainings') {
     const training = entry as TrainingEntry | undefined;
-    fields = `<label>运动类型<input name="exerciseType" type="text" maxlength="80" required value="${html(training?.exerciseType ?? '')}" placeholder="例如 力量训练、跑步" /></label>
+    const selected = !training && exerciseId ? exerciseCatalog.find((exercise) => exercise.id === exerciseId) : undefined;
+    fields = `<label>运动类型<input name="exerciseType" type="text" maxlength="80" required value="${html(training?.exerciseType ?? selected?.name ?? '')}" placeholder="例如 力量训练、跑步" /></label>${selected ? `<p class="field-help">已选择 ${html(selected.name)}。请按实际训练填写时长和估算消耗。</p>` : ''}<p><a class="text-link" href="#/exercises?${new URLSearchParams({ date })}">浏览力量动作库 →</a></p>
       <div class="field-grid">${numeric('durationMin', '训练时长（分钟）', 1, 1440, training?.durationMin)}${numeric('estimatedKcal', '估算消耗（kcal）', 0, 50000, training?.estimatedKcal)}</div><p class="field-help">可填写运动设备或自己的估算值。本阶段不自动估算，也不将此值重复加到 TDEE。</p>`;
   } else {
     fields = `${numeric('weightKg', '体重（kg）', 30, 350, (entry as WeightEntry | undefined)?.weightKg)}<p class="field-help">每天一条，保存会替换该日期的体重。建议在相近的时间和条件下称重。</p>`;

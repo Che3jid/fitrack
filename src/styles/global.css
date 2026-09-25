@@ -180,3 +180,24 @@ dd { margin: 0; text-align: right; font-weight: 700; overflow-wrap: anywhere; }
 .recipe-result strong { display: block; margin: 9px 0 5px; font-size: clamp(25px, 3vw, 36px); line-height: 1.1; font-variant-numeric: tabular-nums; }
 .recipe-result strong small { display: inline; font-size: 12px; }
 .recipe-result p { grid-column: 1 / -1; margin: 0; padding: 12px 14px; color: #3d4840; background: #d5ddd2; border-radius: 10px; font-size: 12px; line-height: 1.6; }
+.exercise-filters { display: grid; grid-template-columns: 2fr repeat(2, 1fr); gap: 12px; margin: 20px 0 8px; }
+.exercise-filters label { min-width: 0; }
+.exercise-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 12px 0 16px; }
+.exercise-card { min-width: 0; background: var(--panel-2); border: 1px solid #b3b8b1; border-radius: 13px; overflow: hidden; }
+.exercise-card summary { display: flex; align-items: center; gap: 12px; padding: 10px; cursor: pointer; list-style: none; }
+.exercise-card summary::-webkit-details-marker { display: none; }
+.exercise-card summary > img, .exercise-no-image { width: 86px; height: 72px; flex: none; object-fit: cover; background: #d8dad4; border-radius: 8px; }
+.exercise-no-image { display: grid; place-items: center; color: var(--muted); font-size: 11px; }
+.exercise-copy { min-width: 0; flex: 1; }
+.exercise-copy strong, .exercise-copy small { display: block; }
+.exercise-copy strong { overflow-wrap: anywhere; font-size: 13px; line-height: 1.35; }
+.exercise-copy small { margin-top: 5px; color: var(--muted); font-size: 11px; line-height: 1.4; }
+.exercise-chevron { flex: none; color: #6c756d; font-size: 20px; }
+.exercise-card details[open] .exercise-chevron { transform: rotate(45deg); }
+.exercise-detail { padding: 0 16px 18px; border-top: 1px solid #c5cac2; font-size: 12px; line-height: 1.6; }
+.exercise-detail h3 { margin: 16px 0 6px; font-size: 13px; }
+.exercise-detail ol { padding-left: 20px; }
+.exercise-detail li { margin: 7px 0; }
+.exercise-detail-image { display: block; max-width: 100%; max-height: 230px; margin: 12px auto; border-radius: 9px; }
+.exercise-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.exercise-tags span { padding: 4px 7px; background: #e2e7de; border-radius: 6px; }
