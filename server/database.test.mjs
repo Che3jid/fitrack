@@ -5,6 +5,7 @@ import { createFitTrackServer } from './index.mjs';
 import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { DatabaseSync } from 'node:sqlite';
 
 const stamp = '2026-09-24T00:00:00.000Z';
 const entity = (id, date) => ({ id, userId: 'user-1', schemaVersion: 1, createdAt: stamp, updatedAt: stamp, ...(date ? { date } : {}) });
@@ -47,12 +48,35 @@ test('records remain available after closing and reopening the database file', (
   } finally { rmSync(directory, { recursive: true, force: true }); }
 });
 
+test('catalog is stored in SQLite, survives user-state replacement and preserves database edits', () => {
+  const directory = mkdtempSync(join(tmpdir(), 'fittrack-catalog-'));
+  const path = join(directory, 'fittrack.sqlite');
+  try {
+    const database = openDatabase(path);
+    assert.equal(database.readCatalog().length, 48);
+    assert.equal(database.readCatalog().find((food) => food.id === 'egg')?.per100g.energyKcal, 143);
+    database.replace(populated(), 0);
+    assert.equal(database.readCatalog().length, 48);
+    database.close();
+
+    const sqlite = new DatabaseSync(path);
+    sqlite.prepare("UPDATE catalog_foods SET name = '测试鸡蛋' WHERE id = 'egg'").run();
+    sqlite.close();
+    const reopened = openDatabase(path);
+    try { assert.equal(reopened.readCatalog().find((food) => food.id === 'egg')?.name, '测试鸡蛋'); }
+    finally { reopened.close(); }
+  } finally { rmSync(directory, { recursive: true, force: true }); }
+});
+
 test('HTTP API requires a token, accepts explicit writes and reports conflicts', async () => {
   const database = openDatabase(':memory:');
   const server = createFitTrackServer({ database, token: 'test-secret' });
   await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
   const url = `http://127.0.0.1:${server.address().port}/api/state`;
   try {
+    const catalog = await fetch(url.replace('/api/state', '/api/catalog'));
+    assert.equal(catalog.status, 200);
+    assert.equal((await catalog.json()).foods.length, 48);
     const missing = await fetch(url);
     assert.equal(missing.status, 401);
     const headers = { Authorization: 'Bearer test-secret', 'Content-Type': 'application/json', Origin: 'null' };

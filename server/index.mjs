@@ -58,6 +58,10 @@ export function createFitTrackServer({ database, token }) {
       response.end();
       return;
     }
+    if (request.url === '/api/catalog') {
+      if (request.method !== 'GET') return json(response, 405, { error: '请求方式不支持' });
+      return json(response, 200, { foods: database.readCatalog() });
+    }
     if (request.url !== '/api/state') return json(response, 404, { error: '接口不存在' });
     if (!authorized(request, token)) return json(response, 401, { error: '访问密钥无效' });
     try {

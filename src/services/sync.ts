@@ -9,7 +9,7 @@ export interface SyncPreview {
   localRaw: string;
 }
 
-function serverUrl(raw: string): string {
+export function serverUrl(raw: string, path: '/api/state' | '/api/catalog' = '/api/state'): string {
   const url = new URL(raw.trim());
   const host = url.hostname.toLowerCase();
   const privateHttp = ['localhost', '127.0.0.1', '[::1]'].includes(host)
@@ -18,7 +18,7 @@ function serverUrl(raw: string): string {
   if (url.username || url.password || url.search || url.hash || (url.protocol !== 'https:' && !(url.protocol === 'http:' && privateHttp))) {
     throw new Error('请输入 HTTPS 地址，或可信局域网中的 HTTP 地址。');
   }
-  return new URL('/api/state', url).href;
+  return new URL(path, url).href;
 }
 
 export class SyncService {

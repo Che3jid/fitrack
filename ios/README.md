@@ -14,6 +14,8 @@
 
 App 的“我的 → 连接数据库”可手动同步 Mac 上的 FitTrack SQLite 服务。真机需与 Mac 在同一可信局域网，服务以 `FITTRACK_HOST=0.0.0.0 npm run server` 启动，并在 App 中填写 Mac 的局域网地址及访问密钥。首次连接会请求本地网络权限；同步需要用户核对数据并主动选择方向。
 
+食物库页面可单独填写同一服务的局域网地址并读取 SQLite 食物目录。目录是只读公开营养数据，无需访问密钥；未连接时继续使用 App 内的离线副本。目录连接只在当前页面有效，用户记录同步仍需在“我的”中明确操作。
+
 工程已经添加 HealthKit Capability，并向网页注入 `window.fittrackNative`：
 
 ```js

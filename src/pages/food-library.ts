@@ -1,10 +1,11 @@
 import { number, decimal } from '../components/layout';
 import { foodCatalog, catalogSourceUrl } from '../data/food-catalog';
 import { calculateRecipe } from '../domain/recipe';
-import type { CookingMethod, RecipeLine } from '../domain/recipe';
+import type { CatalogFood, CookingMethod, RecipeLine } from '../domain/recipe';
 import { MEALS } from '../domain/records';
 import type { MealType } from '../domain/models';
 import { RecordService } from '../services/records';
+import { loadFoodCatalog } from '../services/food-catalog';
 import { escapeHtml as html } from '../utils/html';
 import { recordUrl } from './records';
 
@@ -13,18 +14,24 @@ const methods: Record<CookingMethod, string> = {
   'pan-fry': '煎', bake: '烤 / 烘焙', 'deep-fry': '油炸',
 };
 
+function catalogCards(catalog: readonly CatalogFood[]): string {
+  return catalog.filter((food) => food.group !== '食用油').map((food) =>
+    `<article class="catalog-food" data-name="${html(food.name)}" data-group="${food.group}"><div><strong>${html(food.name)}</strong><small>${food.group} · 每 100 g：${number(food.per100g.energyKcal)} kcal · 钠 ${number(food.per100g.sodiumMg)} mg</small></div><div class="catalog-actions"><a href="${catalogSourceUrl(food.fdcId)}" target="_blank" rel="noopener noreferrer" aria-label="查看${html(food.name)}的数据来源">USDA</a><button type="button" class="secondary" data-add="${html(food.id)}">添加</button></div></article>`).join('');
+}
+
 export function foodLibraryPage(date: string, today: string, meal: MealType): string {
-  const cards = foodCatalog.filter((food) => food.group !== '食用油').map((food) =>
-    `<article class="catalog-food" data-name="${html(food.name)}" data-group="${food.group}"><div><strong>${html(food.name)}</strong><small>${food.group} · 每 100 g：${number(food.per100g.energyKcal)} kcal · 钠 ${number(food.per100g.sodiumMg)} mg</small></div><div class="catalog-actions"><a href="${catalogSourceUrl(food.fdcId)}" target="_blank" rel="noopener noreferrer" aria-label="查看${html(food.name)}的数据来源">USDA</a><button type="button" class="secondary" data-add="${food.id}">添加</button></div></article>`).join('');
+  const defaultServer = location.protocol === 'http:' && ['localhost', '127.0.0.1'].includes(location.hostname)
+    ? location.origin : '';
   return `<section class="page-heading"><p class="eyebrow">食物库 / 配方计算</p><h1 tabindex="-1">从食材算一餐</h1><p class="muted">用原始食材、调味料和实际留在菜中的油估算成品营养。</p></section>
-    <div class="recipe-layout"><section class="card catalog-panel"><div class="section-heading"><h2>选择食材</h2><span class="pill light">${foodCatalog.length} 种基础数据</span></div><div class="field-grid"><label>搜索<input id="catalog-search" type="search" placeholder="例如 鸡蛋、酱油" autocomplete="off" /></label><label>分类<select id="catalog-group"><option value="">全部</option><option value="食材">食材</option><option value="调味料">调味料</option></select></label></div><div class="catalog-list">${cards}</div><p id="catalog-empty" class="empty-copy" hidden>没有匹配的食材。</p><p class="field-help">数据为 USDA SR Legacy 每 100 g 可食部分值；生熟、品种和品牌不同会有差异。点击 USDA 可查看每项原始记录。</p></section>
+    <div class="recipe-layout"><section class="card catalog-panel"><div class="section-heading"><h2>选择食材</h2><span id="catalog-count" class="pill light">${foodCatalog.length} 种基础数据</span></div><form id="catalog-connect" class="catalog-connect"><label>食物库服务器地址<input name="url" type="url" placeholder="http://Mac的局域网IP:8787" value="${defaultServer}" autocapitalize="off" autocomplete="off" spellcheck="false" required /></label><button class="secondary" type="submit">读取数据库</button></form><p id="catalog-status" class="field-help" role="status">当前使用本地离线食物库。数据库未连接时仍可计算。</p><div class="field-grid"><label>搜索<input id="catalog-search" type="search" placeholder="例如 鸡蛋、酱油" autocomplete="off" /></label><label>分类<select id="catalog-group"><option value="">全部</option><option value="食材">食材</option><option value="调味料">调味料</option></select></label></div><div class="catalog-list">${catalogCards(foodCatalog)}</div><p id="catalog-empty" class="empty-copy" hidden>没有匹配的食材。</p><p class="field-help">数据为 USDA SR Legacy 每 100 g 可食部分值；生熟、品种和品牌不同会有差异。点击 USDA 可查看每项原始记录。</p></section>
     <form id="recipe-form" class="card recipe-panel"><h2>这道菜</h2><label>菜名<input name="dishName" type="text" maxlength="80" required placeholder="例如 番茄炒蛋" /></label><div id="recipe-lines" class="recipe-lines"><p class="empty-copy">从左侧添加食材或调味料。</p></div>
       <div class="field-grid"><label>烹饪方式<select name="method">${Object.entries(methods).map(([key, value]) => `<option value="${key}">${value}</option>`).join('')}</select></label><label>使用的油<select name="oilId">${foodCatalog.filter((food) => food.group === '食用油').map((food) => `<option value="${food.id}">${food.name}</option>`).join('')}</select></label><label>实际留在菜中的油（g）<input name="retainedOilG" type="number" inputmode="decimal" min="0" max="500" step="any" value="0" required /></label><label>成品总重（g，可选）<input name="cookedWeightG" type="number" inputmode="decimal" min="0.1" max="100000" step="any" placeholder="称重后更准确" /></label><label>本次吃的成品重量（g，可选）<input name="servingWeightG" type="number" inputmode="decimal" min="0.1" max="100000" step="any" placeholder="留空＝整道菜" /></label><label>餐次<select name="mealType">${Object.entries(MEALS).map(([key, label]) => `<option value="${key}" ${key === meal ? 'selected' : ''}>${label}</option>`).join('')}</select></label><label>记录日期<input name="date" type="date" min="1900-01-01" max="${today}" value="${date}" required /></label></div>
       <p id="method-tip" class="field-help">凉拌时，请把实际食用的油和调味料都计入。</p><p class="field-help">烹饪方式本身不增加热量；油、糖和酱料按实际进入食物的量计入。水分变化只影响每 100 g 的数值。若倒掉汤汁或剩余油，请只填实际吃到的部分。</p><div id="recipe-result" class="recipe-result" aria-live="polite"><p class="empty-copy">添加食材后显示整道菜和本次食用份的估算。</p></div><p id="recipe-error" class="form-error" role="alert"></p><div class="form-actions"><button id="recipe-save" class="primary" type="submit" disabled>记入饮食</button><a class="secondary" href="${recordUrl('foods', date)}">返回饮食</a></div></form></div>`;
 }
 
 export function bindFoodLibrary(root: HTMLElement, service: RecordService): void {
-  const catalog = new Map(foodCatalog.map((food) => [food.id, food]));
+  let activeCatalog: readonly CatalogFood[] = foodCatalog;
+  let catalog = new Map(activeCatalog.map((food) => [food.id, food]));
   const form = root.querySelector<HTMLFormElement>('#recipe-form')!;
   const linesRoot = root.querySelector<HTMLElement>('#recipe-lines')!;
   const resultRoot = root.querySelector<HTMLElement>('#recipe-result')!;
@@ -43,7 +50,7 @@ export function bindFoodLibrary(root: HTMLElement, service: RecordService): void
   function updateResult(): void {
     if (!lines.length) { save.disabled = true; resultRoot.innerHTML = '<p class="empty-copy">添加食材后显示整道菜和本次食用份的估算。</p>'; return; }
     try {
-      const result = calculateRecipe(input(), foodCatalog);
+      const result = calculateRecipe(input(), activeCatalog);
       save.disabled = saving;
       error.textContent = '';
       resultRoot.innerHTML = `<div><span>整道菜</span><strong>${number(result.total.energyKcal)} <small>kcal</small></strong><small>蛋白质 ${decimal(result.total.proteinG)} g · 碳水 ${decimal(result.total.carbsG)} g · 脂肪 ${decimal(result.total.fatG)} g</small></div><div><span>本次食用</span><strong>${number(result.serving.energyKcal)} <small>kcal</small></strong><small>${decimal(result.servingWeightG)} g · 每 100 g ${number(result.per100g.energyKcal)} kcal</small></div><p>本次钠约 ${number(result.serving.sodiumMg)} mg，折合食盐约 ${decimal(result.serving.sodiumMg * 2.5 / 1000)} g。${result.measuredCookedWeight ? '' : '未填写成品重量，暂以原料总重估算食用重量。'}</p>`;
@@ -60,13 +67,15 @@ export function bindFoodLibrary(root: HTMLElement, service: RecordService): void
     }).join('') : '<p class="empty-copy">从左侧添加食材或调味料。</p>';
     updateResult();
   }
-  root.querySelectorAll<HTMLButtonElement>('[data-add]').forEach((button) => button.addEventListener('click', () => {
+  root.querySelector<HTMLElement>('.catalog-list')!.addEventListener('click', (event) => {
+    const button = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-add]');
+    if (!button) return;
     const food = catalog.get(button.dataset.add ?? '');
     if (!food || lines.length >= 30) { error.textContent = '最多添加 30 项。'; return; }
     lines.push({ foodId: food.id, weightG: food.group === '调味料' ? (food.id === 'salt' ? 2 : 5) : 100 });
     renderLines();
     linesRoot.scrollIntoView({ block: 'nearest' });
-  }));
+  });
   linesRoot.addEventListener('input', (event) => {
     const field = event.target as HTMLInputElement;
     const index = Number(field.dataset.line);
@@ -100,12 +109,40 @@ export function bindFoodLibrary(root: HTMLElement, service: RecordService): void
   }
   search.addEventListener('input', filter);
   group.addEventListener('change', filter);
+  const connect = root.querySelector<HTMLFormElement>('#catalog-connect')!;
+  const status = root.querySelector<HTMLElement>('#catalog-status')!;
+  async function refreshCatalog(): Promise<void> {
+    const button = connect.querySelector<HTMLButtonElement>('button')!;
+    button.disabled = true;
+    status.textContent = '正在读取后端数据库…';
+    try {
+      const url = String(new FormData(connect).get('url') ?? '');
+      const remote = await loadFoodCatalog(url);
+      if (!root.isConnected) return;
+      activeCatalog = remote;
+      catalog = new Map(remote.map((food) => [food.id, food]));
+      root.querySelector<HTMLElement>('.catalog-list')!.innerHTML = catalogCards(remote);
+      root.querySelector<HTMLElement>('#catalog-count')!.textContent = `${remote.length} 种数据库食物`;
+      const oil = form.elements.namedItem('oilId') as HTMLSelectElement;
+      const selectedOil = oil.value;
+      oil.innerHTML = remote.filter((food) => food.group === '食用油').map((food) => `<option value="${html(food.id)}">${html(food.name)}</option>`).join('');
+      if (catalog.get(selectedOil)?.group === '食用油') oil.value = selectedOil;
+      for (let index = lines.length - 1; index >= 0; index -= 1) if (!catalog.has(lines[index]!.foodId)) lines.splice(index, 1);
+      renderLines();
+      filter();
+      status.textContent = `已从后端数据库读取 ${remote.length} 种食物；计算使用数据库数值。`;
+    } catch (cause) {
+      status.textContent = `${cause instanceof Error ? cause.message : '读取食物库失败。'} 当前继续使用${activeCatalog === foodCatalog ? '本地离线' : '上次读取的数据库'}食物库。`;
+    } finally { button.disabled = false; }
+  }
+  connect.addEventListener('submit', (event) => { event.preventDefault(); if (connect.reportValidity()) void refreshCatalog(); });
+  if ((connect.elements.namedItem('url') as HTMLInputElement).value) void refreshCatalog();
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
     if (saving || !form.reportValidity()) return;
     saving = true; save.disabled = true; error.textContent = '';
     try {
-      const result = calculateRecipe(input(), foodCatalog);
+      const result = calculateRecipe(input(), activeCatalog);
       const rounded = (num: number) => Math.round(num * 10) / 10;
       await service.saveFood({
         date: value('date'), mealType: value('mealType') as MealType, name: value('dishName'),

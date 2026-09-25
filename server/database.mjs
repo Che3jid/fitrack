@@ -1,6 +1,8 @@
-import { mkdirSync } from 'node:fs';
+import { mkdirSync, readFileSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
+
+const catalogSeed = JSON.parse(readFileSync(new URL('../src/data/food-catalog.json', import.meta.url), 'utf8'));
 
 const COLLECTIONS = ['plans', 'weights', 'foods', 'trainings', 'days'];
 const dated = /^\d{4}-\d{2}-\d{2}$/;
@@ -74,9 +76,35 @@ export function openDatabase(path) {
     CREATE TABLE IF NOT EXISTS foods (id TEXT PRIMARY KEY, user_id TEXT NOT NULL, date TEXT NOT NULL, row_json TEXT NOT NULL);
     CREATE TABLE IF NOT EXISTS trainings (id TEXT PRIMARY KEY, user_id TEXT NOT NULL, date TEXT NOT NULL, row_json TEXT NOT NULL);
     CREATE TABLE IF NOT EXISTS days (id TEXT PRIMARY KEY, user_id TEXT NOT NULL, date TEXT NOT NULL UNIQUE, row_json TEXT NOT NULL);
+    CREATE TABLE IF NOT EXISTS catalog_foods (
+      id TEXT PRIMARY KEY, name TEXT NOT NULL, food_group TEXT NOT NULL, fdc_id INTEGER NOT NULL,
+      energy_kcal REAL NOT NULL, protein_g REAL NOT NULL, carbs_g REAL NOT NULL,
+      fat_g REAL NOT NULL, sodium_mg REAL NOT NULL
+    );
     CREATE INDEX IF NOT EXISTS foods_date ON foods(date);
     CREATE INDEX IF NOT EXISTS trainings_date ON trainings(date);
+    CREATE INDEX IF NOT EXISTS catalog_foods_group_name ON catalog_foods(food_group, name);
   `);
+  const seedFood = db.prepare(`INSERT OR IGNORE INTO catalog_foods
+    (id, name, food_group, fdc_id, energy_kcal, protein_g, carbs_g, fat_g, sodium_mg)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`);
+  db.exec('BEGIN IMMEDIATE');
+  try {
+    for (const food of catalogSeed) {
+      const nutrients = food.per100g;
+      seedFood.run(food.id, food.name, food.group, food.fdcId, nutrients.energyKcal,
+        nutrients.proteinG, nutrients.carbsG, nutrients.fatG, nutrients.sodiumMg);
+    }
+    db.exec('COMMIT');
+  } catch (error) {
+    db.exec('ROLLBACK');
+    db.close();
+    throw error;
+  }
+  const catalogQuery = db.prepare(`SELECT id, name, food_group AS "group", fdc_id AS fdcId,
+    energy_kcal AS energyKcal, protein_g AS proteinG, carbs_g AS carbsG,
+    fat_g AS fatG, sodium_mg AS sodiumMg FROM catalog_foods
+    ORDER BY CASE food_group WHEN '食材' THEN 0 WHEN '调味料' THEN 1 ELSE 2 END, name`);
   const revisionQuery = db.prepare("SELECT value FROM meta WHERE key = 'revision'");
   const profileQuery = db.prepare('SELECT row_json FROM profiles LIMIT 1');
   const queries = Object.fromEntries(COLLECTIONS.map((name) => [name, db.prepare(`SELECT row_json FROM ${name} ORDER BY date, id`)]));
@@ -117,5 +145,11 @@ export function openDatabase(path) {
     }
   }
 
-  return { read, replace, close: () => db.close() };
+  function readCatalog() {
+    return catalogQuery.all().map(({ energyKcal, proteinG, carbsG, fatG, sodiumMg, ...food }) => ({
+      ...food, per100g: { energyKcal, proteinG, carbsG, fatG, sodiumMg },
+    }));
+  }
+
+  return { read, readCatalog, replace, close: () => db.close() };
 }

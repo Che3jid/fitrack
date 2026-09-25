@@ -1,0 +1,626 @@
+[
+  {
+    "id": "rice-white",
+    "name": "白米（生）",
+    "group": "食材",
+    "fdcId": 169756,
+    "per100g": {
+      "energyKcal": 365,
+      "proteinG": 7.13,
+      "carbsG": 79.95,
+      "fatG": 0.66,
+      "sodiumMg": 5
+    }
+  },
+  {
+    "id": "rice-brown",
+    "name": "糙米（生）",
+    "group": "食材",
+    "fdcId": 169703,
+    "per100g": {
+      "energyKcal": 367,
+      "proteinG": 7.54,
+      "carbsG": 76.25,
+      "fatG": 3.2,
+      "sodiumMg": 5
+    }
+  },
+  {
+    "id": "oats-dry",
+    "name": "燕麦片（干）",
+    "group": "食材",
+    "fdcId": 173904,
+    "per100g": {
+      "energyKcal": 379,
+      "proteinG": 13.15,
+      "carbsG": 67.7,
+      "fatG": 6.52,
+      "sodiumMg": 6
+    }
+  },
+  {
+    "id": "pasta-dry",
+    "name": "意面（干）",
+    "group": "食材",
+    "fdcId": 168927,
+    "per100g": {
+      "energyKcal": 371,
+      "proteinG": 13.04,
+      "carbsG": 74.67,
+      "fatG": 1.51,
+      "sodiumMg": 6
+    }
+  },
+  {
+    "id": "wheat-flour",
+    "name": "小麦面粉（生）",
+    "group": "食材",
+    "fdcId": 169761,
+    "per100g": {
+      "energyKcal": 364,
+      "proteinG": 10.33,
+      "carbsG": 76.31,
+      "fatG": 0.98,
+      "sodiumMg": 2
+    }
+  },
+  {
+    "id": "white-bread",
+    "name": "白面包（成品）",
+    "group": "食材",
+    "fdcId": 174924,
+    "per100g": {
+      "energyKcal": 266,
+      "proteinG": 8.85,
+      "carbsG": 49.42,
+      "fatG": 3.33,
+      "sodiumMg": 490
+    }
+  },
+  {
+    "id": "chicken-breast",
+    "name": "鸡胸肉（生、去皮）",
+    "group": "食材",
+    "fdcId": 171077,
+    "per100g": {
+      "energyKcal": 120,
+      "proteinG": 22.5,
+      "carbsG": 0,
+      "fatG": 2.62,
+      "sodiumMg": 45
+    }
+  },
+  {
+    "id": "chicken-thigh",
+    "name": "鸡腿肉（生、去皮）",
+    "group": "食材",
+    "fdcId": 173627,
+    "per100g": {
+      "energyKcal": 121,
+      "proteinG": 19.66,
+      "carbsG": 0,
+      "fatG": 4.12,
+      "sodiumMg": 95
+    }
+  },
+  {
+    "id": "pork-loin",
+    "name": "猪里脊（生、瘦肉）",
+    "group": "食材",
+    "fdcId": 168230,
+    "per100g": {
+      "energyKcal": 143,
+      "proteinG": 21.43,
+      "carbsG": 0,
+      "fatG": 5.66,
+      "sodiumMg": 52
+    }
+  },
+  {
+    "id": "beef-ground",
+    "name": "牛肉末（生、约 10% 脂肪）",
+    "group": "食材",
+    "fdcId": 174030,
+    "per100g": {
+      "energyKcal": 176,
+      "proteinG": 20,
+      "carbsG": 0,
+      "fatG": 10,
+      "sodiumMg": 66
+    }
+  },
+  {
+    "id": "egg",
+    "name": "鸡蛋（生、全蛋）",
+    "group": "食材",
+    "fdcId": 171287,
+    "per100g": {
+      "energyKcal": 143,
+      "proteinG": 12.56,
+      "carbsG": 0.72,
+      "fatG": 9.51,
+      "sodiumMg": 142
+    }
+  },
+  {
+    "id": "tofu-firm",
+    "name": "老豆腐",
+    "group": "食材",
+    "fdcId": 172448,
+    "per100g": {
+      "energyKcal": 78,
+      "proteinG": 9.04,
+      "carbsG": 2.85,
+      "fatG": 4.17,
+      "sodiumMg": 12
+    }
+  },
+  {
+    "id": "milk-whole",
+    "name": "全脂牛奶",
+    "group": "食材",
+    "fdcId": 172217,
+    "per100g": {
+      "energyKcal": 61,
+      "proteinG": 3.15,
+      "carbsG": 4.78,
+      "fatG": 3.27,
+      "sodiumMg": 43
+    }
+  },
+  {
+    "id": "cheddar",
+    "name": "切达奶酪",
+    "group": "食材",
+    "fdcId": 173414,
+    "per100g": {
+      "energyKcal": 403,
+      "proteinG": 22.87,
+      "carbsG": 3.37,
+      "fatG": 33.31,
+      "sodiumMg": 653
+    }
+  },
+  {
+    "id": "salmon",
+    "name": "三文鱼（生、野生大西洋）",
+    "group": "食材",
+    "fdcId": 173686,
+    "per100g": {
+      "energyKcal": 142,
+      "proteinG": 19.84,
+      "carbsG": 0,
+      "fatG": 6.34,
+      "sodiumMg": 44
+    }
+  },
+  {
+    "id": "shrimp",
+    "name": "虾（生）",
+    "group": "食材",
+    "fdcId": 175179,
+    "per100g": {
+      "energyKcal": 85,
+      "proteinG": 20.1,
+      "carbsG": 0,
+      "fatG": 0.51,
+      "sodiumMg": 119
+    }
+  },
+  {
+    "id": "potato",
+    "name": "土豆（生、带皮）",
+    "group": "食材",
+    "fdcId": 170026,
+    "per100g": {
+      "energyKcal": 77,
+      "proteinG": 2.05,
+      "carbsG": 17.49,
+      "fatG": 0.09,
+      "sodiumMg": 6
+    }
+  },
+  {
+    "id": "corn",
+    "name": "甜玉米（生）",
+    "group": "食材",
+    "fdcId": 169998,
+    "per100g": {
+      "energyKcal": 86,
+      "proteinG": 3.27,
+      "carbsG": 18.7,
+      "fatG": 1.35,
+      "sodiumMg": 15
+    }
+  },
+  {
+    "id": "kidney-beans",
+    "name": "红腰豆（干）",
+    "group": "食材",
+    "fdcId": 173744,
+    "per100g": {
+      "energyKcal": 337,
+      "proteinG": 22.53,
+      "carbsG": 61.29,
+      "fatG": 1.06,
+      "sodiumMg": 12
+    }
+  },
+  {
+    "id": "lentils",
+    "name": "扁豆（干）",
+    "group": "食材",
+    "fdcId": 172420,
+    "per100g": {
+      "energyKcal": 352,
+      "proteinG": 24.63,
+      "carbsG": 63.35,
+      "fatG": 1.06,
+      "sodiumMg": 6
+    }
+  },
+  {
+    "id": "peanuts",
+    "name": "花生（生）",
+    "group": "食材",
+    "fdcId": 172430,
+    "per100g": {
+      "energyKcal": 567,
+      "proteinG": 25.8,
+      "carbsG": 16.13,
+      "fatG": 49.24,
+      "sodiumMg": 18
+    }
+  },
+  {
+    "id": "tomato",
+    "name": "番茄（生）",
+    "group": "食材",
+    "fdcId": 170457,
+    "per100g": {
+      "energyKcal": 18,
+      "proteinG": 0.88,
+      "carbsG": 3.89,
+      "fatG": 0.2,
+      "sodiumMg": 5
+    }
+  },
+  {
+    "id": "onion",
+    "name": "洋葱（生）",
+    "group": "食材",
+    "fdcId": 170000,
+    "per100g": {
+      "energyKcal": 40,
+      "proteinG": 1.1,
+      "carbsG": 9.34,
+      "fatG": 0.1,
+      "sodiumMg": 4
+    }
+  },
+  {
+    "id": "broccoli",
+    "name": "西兰花（生）",
+    "group": "食材",
+    "fdcId": 170379,
+    "per100g": {
+      "energyKcal": 34,
+      "proteinG": 2.82,
+      "carbsG": 6.64,
+      "fatG": 0.37,
+      "sodiumMg": 33
+    }
+  },
+  {
+    "id": "spinach",
+    "name": "菠菜（生）",
+    "group": "食材",
+    "fdcId": 168462,
+    "per100g": {
+      "energyKcal": 23,
+      "proteinG": 2.86,
+      "carbsG": 3.63,
+      "fatG": 0.39,
+      "sodiumMg": 79
+    }
+  },
+  {
+    "id": "carrot",
+    "name": "胡萝卜（生）",
+    "group": "食材",
+    "fdcId": 170393,
+    "per100g": {
+      "energyKcal": 41,
+      "proteinG": 0.93,
+      "carbsG": 9.58,
+      "fatG": 0.24,
+      "sodiumMg": 69
+    }
+  },
+  {
+    "id": "mushroom",
+    "name": "白蘑菇（生）",
+    "group": "食材",
+    "fdcId": 169251,
+    "per100g": {
+      "energyKcal": 22,
+      "proteinG": 3.09,
+      "carbsG": 3.26,
+      "fatG": 0.34,
+      "sodiumMg": 5
+    }
+  },
+  {
+    "id": "zucchini",
+    "name": "西葫芦（生）",
+    "group": "食材",
+    "fdcId": 169291,
+    "per100g": {
+      "energyKcal": 17,
+      "proteinG": 1.21,
+      "carbsG": 3.11,
+      "fatG": 0.32,
+      "sodiumMg": 8
+    }
+  },
+  {
+    "id": "cauliflower",
+    "name": "花椰菜（生）",
+    "group": "食材",
+    "fdcId": 169986,
+    "per100g": {
+      "energyKcal": 25,
+      "proteinG": 1.92,
+      "carbsG": 4.97,
+      "fatG": 0.28,
+      "sodiumMg": 30
+    }
+  },
+  {
+    "id": "cabbage",
+    "name": "卷心菜（生）",
+    "group": "食材",
+    "fdcId": 169975,
+    "per100g": {
+      "energyKcal": 25,
+      "proteinG": 1.28,
+      "carbsG": 5.8,
+      "fatG": 0.1,
+      "sodiumMg": 18
+    }
+  },
+  {
+    "id": "red-pepper",
+    "name": "红甜椒（生）",
+    "group": "食材",
+    "fdcId": 170108,
+    "per100g": {
+      "energyKcal": 26,
+      "proteinG": 0.99,
+      "carbsG": 6.03,
+      "fatG": 0.3,
+      "sodiumMg": 4
+    }
+  },
+  {
+    "id": "cucumber",
+    "name": "黄瓜（生、带皮）",
+    "group": "食材",
+    "fdcId": 168409,
+    "per100g": {
+      "energyKcal": 15,
+      "proteinG": 0.65,
+      "carbsG": 3.63,
+      "fatG": 0.11,
+      "sodiumMg": 2
+    }
+  },
+  {
+    "id": "apple",
+    "name": "苹果（生、带皮）",
+    "group": "食材",
+    "fdcId": 171688,
+    "per100g": {
+      "energyKcal": 52,
+      "proteinG": 0.26,
+      "carbsG": 13.81,
+      "fatG": 0.17,
+      "sodiumMg": 1
+    }
+  },
+  {
+    "id": "banana",
+    "name": "香蕉（生）",
+    "group": "食材",
+    "fdcId": 173944,
+    "per100g": {
+      "energyKcal": 89,
+      "proteinG": 1.09,
+      "carbsG": 22.84,
+      "fatG": 0.33,
+      "sodiumMg": 1
+    }
+  },
+  {
+    "id": "salt",
+    "name": "食盐",
+    "group": "调味料",
+    "fdcId": 173468,
+    "per100g": {
+      "energyKcal": 0,
+      "proteinG": 0,
+      "carbsG": 0,
+      "fatG": 0,
+      "sodiumMg": 38758
+    }
+  },
+  {
+    "id": "sugar",
+    "name": "白砂糖",
+    "group": "调味料",
+    "fdcId": 169655,
+    "per100g": {
+      "energyKcal": 387,
+      "proteinG": 0,
+      "carbsG": 99.98,
+      "fatG": 0,
+      "sodiumMg": 1
+    }
+  },
+  {
+    "id": "soy-sauce",
+    "name": "酱油（普通）",
+    "group": "调味料",
+    "fdcId": 174277,
+    "per100g": {
+      "energyKcal": 53,
+      "proteinG": 8.14,
+      "carbsG": 4.93,
+      "fatG": 0.57,
+      "sodiumMg": 5493
+    }
+  },
+  {
+    "id": "oyster-sauce",
+    "name": "蚝油",
+    "group": "调味料",
+    "fdcId": 174529,
+    "per100g": {
+      "energyKcal": 51,
+      "proteinG": 1.35,
+      "carbsG": 10.92,
+      "fatG": 0.25,
+      "sodiumMg": 2733
+    }
+  },
+  {
+    "id": "vinegar",
+    "name": "白醋",
+    "group": "调味料",
+    "fdcId": 172237,
+    "per100g": {
+      "energyKcal": 18,
+      "proteinG": 0,
+      "carbsG": 0.04,
+      "fatG": 0,
+      "sodiumMg": 2
+    }
+  },
+  {
+    "id": "garlic",
+    "name": "大蒜（生）",
+    "group": "调味料",
+    "fdcId": 169230,
+    "per100g": {
+      "energyKcal": 149,
+      "proteinG": 6.36,
+      "carbsG": 33.06,
+      "fatG": 0.5,
+      "sodiumMg": 17
+    }
+  },
+  {
+    "id": "ginger",
+    "name": "姜（生）",
+    "group": "调味料",
+    "fdcId": 169231,
+    "per100g": {
+      "energyKcal": 80,
+      "proteinG": 1.82,
+      "carbsG": 17.77,
+      "fatG": 0.75,
+      "sodiumMg": 13
+    }
+  },
+  {
+    "id": "black-pepper",
+    "name": "黑胡椒粉",
+    "group": "调味料",
+    "fdcId": 170931,
+    "per100g": {
+      "energyKcal": 251,
+      "proteinG": 10.39,
+      "carbsG": 63.95,
+      "fatG": 3.26,
+      "sodiumMg": 20
+    }
+  },
+  {
+    "id": "red-chili",
+    "name": "红辣椒（生）",
+    "group": "调味料",
+    "fdcId": 170106,
+    "per100g": {
+      "energyKcal": 40,
+      "proteinG": 1.87,
+      "carbsG": 8.81,
+      "fatG": 0.44,
+      "sodiumMg": 9
+    }
+  },
+  {
+    "id": "tomato-sauce",
+    "name": "无盐番茄酱",
+    "group": "调味料",
+    "fdcId": 169074,
+    "per100g": {
+      "energyKcal": 24,
+      "proteinG": 1.2,
+      "carbsG": 5.31,
+      "fatG": 0.3,
+      "sodiumMg": 11
+    }
+  },
+  {
+    "id": "butter",
+    "name": "无盐黄油",
+    "group": "调味料",
+    "fdcId": 173430,
+    "per100g": {
+      "energyKcal": 717,
+      "proteinG": 0.85,
+      "carbsG": 0.06,
+      "fatG": 81.11,
+      "sodiumMg": 11
+    }
+  },
+  {
+    "id": "soybean-oil",
+    "name": "大豆油",
+    "group": "食用油",
+    "fdcId": 171411,
+    "per100g": {
+      "energyKcal": 884,
+      "proteinG": 0,
+      "carbsG": 0,
+      "fatG": 100,
+      "sodiumMg": 0
+    }
+  },
+  {
+    "id": "olive-oil",
+    "name": "橄榄油",
+    "group": "食用油",
+    "fdcId": 171413,
+    "per100g": {
+      "energyKcal": 884,
+      "proteinG": 0,
+      "carbsG": 0,
+      "fatG": 100,
+      "sodiumMg": 2
+    }
+  },
+  {
+    "id": "sesame-oil",
+    "name": "芝麻油",
+    "group": "食用油",
+    "fdcId": 171016,
+    "per100g": {
+      "energyKcal": 884,
+      "proteinG": 0,
+      "carbsG": 0,
+      "fatG": 100,
+      "sodiumMg": 0
+    }
+  }
+]
