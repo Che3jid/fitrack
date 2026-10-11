@@ -2,6 +2,7 @@ import { goalLabels, number, decimal as grams } from '../components/layout';
 import type { dailySummary } from '../services/summary';
 import type { AdaptiveRecommendation } from '../domain/adaptive-tdee';
 import { recordUrl } from './records';
+import { goalArt } from '../components/goal-art';
 
 function recommendationCard(recommendation: AdaptiveRecommendation | null): string {
   if (!recommendation) return '';
@@ -17,7 +18,7 @@ function recommendationCard(recommendation: AdaptiveRecommendation | null): stri
     <p class="field-help">估算会受水分与记录误差影响，不自动更改每日目标或历史数据。训练消耗不会重复叠加。</p><a class="text-link" href="#/trends">查看体重与摄入趋势 →</a></section>`;
 }
 
-export function todayPage(summary: ReturnType<typeof dailySummary>, date: string, recommendation: AdaptiveRecommendation | null = null): string {
+export function todayPage(summary: ReturnType<typeof dailySummary>, date: string, recommendation: AdaptiveRecommendation | null = null, supplement: { total: number; taken: number } = { total: 0, taken: 0 }): string {
   const { plan, nutrition, balance, completed, weight } = summary;
   if (!plan) throw new Error('无法读取今日计划，请重试。');
   const status = completed ? '当日记录已完成' : nutrition ? '记录中 · 还不是全天摄入' : '尚无饮食记录';
@@ -35,7 +36,7 @@ export function todayPage(summary: ReturnType<typeof dailySummary>, date: string
       <a href="${recordUrl('foods', date, true)}" class="snapshot"><span class="snapshot-ring add"><span>＋</span></span><span>记一餐</span></a>
     </div>
     <section class="card energy-dashboard" aria-label="今日热量仪表盘">
-      <div class="dashboard-intro"><span class="pill">${goalLabels[plan.profileSnapshot.goal]}计划</span><h2>热量进度</h2><p>${status}</p></div>
+      <div class="dashboard-intro"><span class="pill">${goalLabels[plan.profileSnapshot.goal]}计划</span><h2>热量进度</h2><p>${status}</p>${goalArt(plan.profileSnapshot.goal)}</div>
       <div class="calorie-gauge${consumedKcal > plan.targetKcal ? ' is-over-target' : ''}" role="img" aria-label="${gaugeLabel}" style="--gauge-target: ${progress}%">
         <span class="gauge-glow" aria-hidden="true"></span><span class="gauge-ticks" aria-hidden="true"></span><span class="gauge-sweep" aria-hidden="true"></span>
         <div class="gauge-center"><span>已摄入</span><strong>${nutrition ? number(consumedKcal) : '—'}</strong><small>/ ${number(plan.targetKcal)} kcal</small><b>${progressLabel}</b></div>
@@ -48,6 +49,7 @@ export function todayPage(summary: ReturnType<typeof dailySummary>, date: string
       </dl>
     </section>
     <div class="quick-actions"><a class="primary" href="${recordUrl('foods', date, true)}">＋ 记录饮食</a><a class="secondary" href="${recordUrl('trainings', date, true)}">记录训练</a><a class="secondary" href="${recordUrl('weights', date, true)}">记录体重</a></div>
+    <section class="card supplement-summary"><div class="section-heading"><h2>每日补给</h2><span class="pill light">${supplement.taken} / ${supplement.total}</span></div><p class="muted">${supplement.total ? '查看清单，勾选今天已使用的项目。' : '添加你需要记录的补给，建立自己的每日清单。'}</p><a class="text-link" href="#/supplements">${supplement.total ? '打开今日清单' : '建立补给清单'} →</a></section>
     <section class="card"><div class="section-heading"><h2>三大营养素</h2><span class="muted">${completed ? '已完成' : nutrition ? '记录中' : '尚无记录'}</span></div><div class="macro-grid"><div><span class="macro-dot protein"></span>蛋白质<strong>${nutrition ? grams(nutrition.proteinG) : '—'} <small>g</small></strong></div><div><span class="macro-dot carbs"></span>碳水<strong>${nutrition ? grams(nutrition.carbsG) : '—'} <small>g</small></strong></div><div><span class="macro-dot fat"></span>脂肪<strong>${nutrition ? grams(nutrition.fatG) : '—'} <small>g</small></strong></div></div>
     <p class="field-help">距目标剩余 ${balance ? number(balance.remainingKcal) : '—'} kcal${balance && balance.remainingKcal < 0 ? '（已超出目标）' : ''}。</p></section>
     <section class="metric-grid"><article class="card"><h2>今日训练</h2><strong class="metric">${summary.trainingMinutes} <small>分钟</small></strong><p class="muted">估算消耗 ${number(summary.trainingKcal)} kcal</p><a href="${recordUrl('trainings', date)}">查看训练</a></article><article class="card"><h2>今日体重</h2><strong class="metric">${weight ? weight.weightKg : '—'} <small>kg</small></strong><p class="muted">${weight ? '当天已记录' : '当天尚未称重'}</p><a href="${recordUrl('weights', date)}">管理体重记录</a></article></section>

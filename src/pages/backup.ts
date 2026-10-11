@@ -23,7 +23,12 @@ export function backupPage(state: AppState): string {
     ${state.recovery ? `<form id="undo-form" class="card"><h2>恢复导入前的数据</h2><p class="muted">恢复到 ${new Date(state.recovery.savedAt).toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' })} 导入前的状态。</p>${counts(state.recovery.state)}<p class="field-help">这会替换当前数据，包括导入后新增的记录。建议先导出当前数据。恢复后，这个恢复副本将被移除。</p><label class="check-label"><input type="checkbox" required />确认恢复导入前数据，替换当前记录</label><button type="submit" class="secondary">恢复导入前数据</button></form>` : ''}
     <a href="${state.profile ? '#/profile' : '#/onboarding'}" class="text-link">← ${state.profile ? '返回我的' : '返回首次设置'}</a>`;
 }
-function download(text: string): void {
+function download(text: string): boolean {
+  const native = (window as Window & { fittrackAndroid?: { saveBackup(name: string, data: string): void } }).fittrackAndroid;
+  if (native) {
+    native.saveBackup(`fittrack-backup-${dateKey(new Date())}.json`, text);
+    return true;
+  }
   const url = URL.createObjectURL(new Blob([text], { type: 'application/json;charset=utf-8' }));
   const link = document.createElement('a');
   link.href = url;
@@ -32,6 +37,7 @@ function download(text: string): void {
   link.click();
   link.remove();
   window.setTimeout(() => URL.revokeObjectURL(url), 10_000);
+  return false;
 }
 export function bindBackup(root: HTMLElement, service: BackupService, state: AppState, refresh: () => Promise<void>): void {
   const fileInput = root.querySelector<HTMLInputElement>('#backup-file')!;
@@ -43,7 +49,12 @@ export function bindBackup(root: HTMLElement, service: BackupService, state: App
   let busy = false;
   const report = (cause: unknown) => { error.textContent = cause instanceof Error ? cause.message : '操作失败，当前数据未更改。'; };
   root.querySelector('#export-backup')!.addEventListener('click', async () => {
-    try { download(await service.export()); if (message()) message()!.textContent = '已生成备份，请确认文件已保存到下载目录或“文件”中。'; }
+    try {
+      const android = download(await service.export());
+      if (message()) message()!.textContent = android
+        ? '已生成备份，请在系统文件选择器中选择保存位置。'
+        : '已生成备份，请确认文件已保存到下载目录或“文件”中。';
+    }
     catch (cause) { report(cause); }
   });
   fileInput.addEventListener('change', async () => {

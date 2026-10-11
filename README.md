@@ -1,6 +1,6 @@
 # FitTrack
 
-一个手机优先的开源健身饮食记录项目。网页端使用 HTML、CSS 和 TypeScript；iPhone 端使用 SwiftUI、WKWebView 和 HealthKit，并复用同一套界面与本地数据逻辑。
+一个手机优先的开源健身饮食记录项目。网页端使用 HTML、CSS 和 TypeScript；iPhone 与 Android 端分别使用 SwiftUI/WKWebView 和原生 Android WebView，并复用同一套界面与本地数据逻辑。
 
 GitHub 仓库：[Che3jid/fitrack](https://github.com/Che3jid/fitrack)。产品名称为 FitTrack，仓库名为 `fitrack`。
 
@@ -8,7 +8,7 @@ GitHub 仓库：[Che3jid/fitrack](https://github.com/Che3jid/fitrack)。产品�
 
 **本地优先版本，已加入可选后端数据库。** 已实现首次设置、个人资料、饮食/训练/体重记录、今日实时汇总、7/30/90 日趋势、动态 TDEE 试算与每日摄入建议，以及 JSON 备份与恢复。日常记录先保存在设备的 IndexedDB；用户可连接自己的 SQLite 服务，核对后手动上传或下载。
 
-饮食按四餐管理，可手动填写，也可从食材库按原料重量、调味料、留在菜中的油和成品重量计算后记入饮食。食材目录存入后端 SQLite；页面可读取后端目录，断开连接时使用随 App 打包的离线副本。力量动作库收录 678 个动作，可按名称、肌群、器械、难度和类别查找，并把动作名称带入训练表单。训练时长和消耗仍由用户手动填写，体重每日一条；记录均可按日期查看、编辑、删除和恢复。趋势保留缺失日期，不把缺失当成零；摄入的 7 日平均只统计用户明确标记完成的日期。备份导入会先展示摘要，确认后完整替换本地数据，并保留最近一次导入前的恢复副本。
+饮食按四餐管理，可手动填写，也可从食材库按原料重量、调味料、留在菜中的油和成品重量计算后记入饮食。每日补给页允许用户自建清单并按上海日期勾选，清单和打卡保存在同一本地数据库，随完整备份及手动同步传输；应用不自动建议任何人服用补给。食材目录存入后端 SQLite；页面可读取后端目录，断开连接时使用随 App 打包的离线副本。力量动作库收录 678 个动作，可按名称、肌群、器械、难度和类别查找，并把动作名称带入训练表单。训练时长和消耗仍由用户手动填写，体重每日一条；记录均可按日期查看、编辑、删除和恢复。趋势保留缺失日期，不把缺失当成零；摄入的 7 日平均只统计用户明确标记完成的日期。备份导入会先展示摘要，确认后完整替换本地数据，并保留最近一次导入前的恢复副本。
 
 ## V1 功能规划
 
@@ -34,6 +34,7 @@ GitHub 仓库：[Che3jid/fitrack](https://github.com/Che3jid/fitrack)。产品�
 - [USDA FoodData Central SR Legacy](https://fdc.nal.usda.gov/download-datasets/)：本地食材和调味料的每 100 g 营养参考值；每项保留 FDC ID，数据按 CC0 提供。
 - [free-exercise-db](https://github.com/yuhonas/free-exercise-db)：力量动作名称、肌群、器械、难度、英文步骤和静态示意图，按 Unlicense 提供；固定上游版本，文本随 App 离线打包，图片联网加载。
 - SwiftUI + WKWebView：提供原生 iPhone App 外壳，并在构建时把网页产物打包进 App。
+- Java + Android WebView：提供原生 Android App 外壳，用 WebViewAssetLoader 从 APK 安全地加载离线网页；构建时同样打包网页产物。
 - HealthKit：已加入权限桥接，为后续读取 Apple Watch 同步到 iPhone 的体重、步数、心率、运动和活动能量做准备。
 
 ## 运行
@@ -67,6 +68,16 @@ Mac 与 iPhone 连接同一可信局域网后，可以执行 `npm run dev -- --h
 
 模拟器可以验证界面和本地记录。HealthKit 的真实健康数据需要使用实体 iPhone，并在系统授权弹窗中允许 FitTrack 读取。当前版本只完成权限连接，尚未把健康数据自动写入 FitTrack 记录。
 
+### Android 版
+
+需要 Android Studio、Android SDK（API 36 与 Build Tools 36）及 JDK 17；Android Studio 内置的 JDK 也可以。先在项目根目录执行 `npm ci`，再用 Android Studio 打开 `android/`，选择模拟器或 USB 调试设备，点击运行。Gradle 会自动执行网页构建并将 `dist/` 打包进 APK。也可在 `android/` 执行 `./gradlew :app:assembleDebug`；调试 APK 位于 `android/app/build/outputs/apk/debug/`。
+
+Android 版含今日、饮食、训练、趋势、食物库、补给清单等当前网页功能。资料与记录保存在 App 私有的 WebView IndexedDB，不会与浏览器或 iPhone 自动共用；“我的 → 数据备份”可用系统文件选择器导出、导入 JSON。卸载 App 可能清除本地记录，请先导出备份。当前 Android 版没有 Health Connect 或手表同步。
+
+本项目也提供 [本地命令行构建入口](android/README.md#本机命令行构建)。在已安装项目内工具的 Mac 上执行 `./android/build-local.sh`，即可直接生成调试 APK，无需打开 Android Studio。
+
+若要连接 Mac 上的 SQLite 服务，先在 Mac 执行 `FITTRACK_HOST=0.0.0.0 npm run server`，然后在 Android App 中填写 `http://<Mac 局域网 IP>:8787` 和访问密钥。两台设备须在同一可信局域网；此 HTTP 连接不加密，不要在公共 Wi-Fi 使用。联网动作图片及数据库访问需要网络，离线基础目录和已保存的记录仍可使用。详情见 [Android 工程说明](android/README.md)。
+
 ### 可选后端数据库
 
 另开一个终端运行 `npm run server`。服务默认只监听 Mac 的 `127.0.0.1:8787`，首次启动会在忽略提交的 `data/` 目录创建 `fittrack.sqlite` 和 `access-token`，并在终端显示访问密钥。在网页“我的 → 连接数据库”填写 `http://127.0.0.1:8787` 与密钥，先查看两端记录数量，再明确选择上传或下载。上传完整替换服务器记录；下载完整替换当前设备记录，并保存一次可从“数据备份”恢复的旧副本。服务器修订版变化时会拒绝旧预览的上传，不自动合并。
@@ -96,6 +107,7 @@ src/
 tests/                 计算、存储、记录、趋势、备份、迁移和异常恢复测试
 docs/architecture.md   分层、路由、持久化和阶段规划
 ios/                   SwiftUI iPhone 工程、HealthKit 桥接与 Xcode 配置
+android/               原生 Android 工程、WebView 离线外壳与文件备份桥接
 server/                SQLite 数据库、HTTP API 与后端测试
 ```
 

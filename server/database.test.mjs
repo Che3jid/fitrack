@@ -35,6 +35,22 @@ test('SQLite keeps all record collections and rejects stale replacements without
   } finally { database.close(); }
 });
 
+test('SQLite keeps optional supplement plan and daily check-ins through replacement', () => {
+  const database = openDatabase(':memory:');
+  try {
+    const state = populated();
+    state.profile.supplementPlan = [{ id: 'creatine', name: '肌酸' }];
+    state.days[0].supplementTakenIds = ['creatine'];
+    database.replace(state, 0);
+    assert.deepEqual(database.read().state.profile.supplementPlan, state.profile.supplementPlan);
+    assert.deepEqual(database.read().state.days[0].supplementTakenIds, ['creatine']);
+    const invalid = structuredClone(state);
+    invalid.days[0].supplementTakenIds = ['creatine', 'creatine'];
+    assert.throws(() => database.replace(invalid, 1), /完成状态无效/);
+    assert.deepEqual(database.read().state, state);
+  } finally { database.close(); }
+});
+
 test('records remain available after closing and reopening the database file', () => {
   const directory = mkdtempSync(join(tmpdir(), 'fittrack-db-'));
   const path = join(directory, 'fittrack.sqlite');
@@ -117,6 +133,9 @@ test('HTTP API requires a token, accepts explicit writes and reports conflicts',
     assert.equal(database.read().state.foods[0].name, '燕麦');
     const foreign = await fetch(url, { headers: { ...headers, Origin: 'https://untrusted.example' } });
     assert.equal(foreign.status, 403);
+    const android = await fetch(url, { headers: { ...headers, Origin: 'https://appassets.androidplatform.net' } });
+    assert.equal(android.status, 200);
+    assert.equal(android.headers.get('access-control-allow-origin'), 'https://appassets.androidplatform.net');
   } finally {
     await new Promise((resolve) => server.close(resolve));
     database.close();

@@ -15,4 +15,10 @@ DerivedData/
 *.xcuserstate
 xcuserdata/
 ios/build/
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/.toolchain/
+android/.gradle-user/
 /data/

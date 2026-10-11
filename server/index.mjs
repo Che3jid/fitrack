@@ -15,6 +15,7 @@ function json(response, status, data) {
 function allowedOrigin(origin) {
   if (!origin) return false;
   if (origin === 'null') return true; // The bundled iPhone WKWebView uses file://.
+  if (origin === 'https://appassets.androidplatform.net') return true; // The bundled Android WebViewAssetLoader origin.
   try {
     const url = new URL(origin);
     return url.protocol === 'http:' && ['localhost', '127.0.0.1', '[::1]'].includes(url.hostname);

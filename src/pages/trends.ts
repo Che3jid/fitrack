@@ -2,13 +2,14 @@ import { decimal, number } from '../components/layout';
 import { lineChart } from '../components/chart';
 import type { TrendDay } from '../services/trends';
 import { escapeHtml as html } from '../utils/html';
+import { sectionArt } from '../components/section-art';
 
 export function trendsPage(rows: TrendDay[], endDate: string, days: number, today: string): string {
   const latest = rows.at(-1)!;
   const dates = rows.map((day) => day.date);
   const show = (value: number | null, round = false) => value === null ? '—' : round ? number(value) : decimal(value);
   const average = (value: { average: number | null; count: number }, unit: string) => `<strong class="metric">${show(value.average, unit === 'kcal')} <small>${unit}</small></strong><p class="muted">最近 7 个日历日 · ${value.count}/7 天有效记录</p>`;
-  return `<section class="page-heading"><p class="eyebrow">数据 / 趋势</p><h1 tabindex="-1">趋势分析</h1><p class="muted">按日期查看体重、摄入与热量差。</p></section>
+  return `<section class="page-heading illustrated-heading"><div><p class="eyebrow">数据 / 趋势</p><h1 tabindex="-1">趋势分析</h1><p class="muted">按日期查看体重、摄入与热量差。</p></div>${sectionArt('trends')}</section>
     <div class="trend-controls"><label>查看范围<select id="trend-range">${[7, 30, 90].map((value) => `<option value="${value}" ${days === value ? 'selected' : ''}>最近 ${value} 天</option>`).join('')}</select></label><label>截止日期<input id="trend-end" type="date" min="1900-04-07" max="${today}" value="${endDate}" required /></label></div>
     <section class="metric-grid"><article class="card"><h2>7 日平均体重</h2>${average(latest.weightAverage, 'kg')}</article><article class="card"><h2>7 日平均摄入</h2>${average(latest.intakeAverage, 'kcal')}</article></section>
     <section class="card chart-card"><h2>体重趋势 <small>kg</small></h2>${lineChart('体重', dates, [

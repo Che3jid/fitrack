@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.FitTrack" parent="Theme.FitTrack.Base">
+        <item name="android:navigationBarColor">#f5f4f1</item>
+        <item name="android:windowLightNavigationBar">true</item>
+    </style>
+</resources>

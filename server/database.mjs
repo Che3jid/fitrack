@@ -18,6 +18,12 @@ const validProfile = (value) => value && oneOf(value.sex, ['male', 'female'])
   && bounded(value.heightCm, 100, 250) && bounded(value.weightKg, 30, 350)
   && oneOf(value.activityLevel, ['sedentary', 'light', 'moderate', 'high', 'veryHigh'])
   && oneOf(value.goal, ['lose', 'maintain', 'gain']);
+const validSupplementPlan = (value) => value === undefined || (Array.isArray(value) && value.length <= 20
+  && value.every((item) => item && typeof item === 'object' && !Array.isArray(item)
+    && typeof item.id === 'string' && item.id.length > 0 && label(item.name) && item.name.trim().length <= 40)
+  && new Set(value.map((item) => item.id)).size === value.length);
+const validSupplementChecks = (value) => value === undefined || (Array.isArray(value) && value.length <= 20
+  && value.every((id) => typeof id === 'string' && id.length > 0) && new Set(value).size === value.length);
 
 function entity(value, owner, needsDate = true) {
   return value && typeof value === 'object' && !Array.isArray(value)
@@ -35,7 +41,8 @@ export function validateServerState(value) {
     throw new Error('数据格式或版本无效');
   }
   const owner = value.profile?.userId ?? null;
-  if (value.profile !== null && (!entity(value.profile, owner, false) || !validProfile(value.profile))) throw new Error('个人资料无效');
+  if (value.profile !== null && (!entity(value.profile, owner, false) || !validProfile(value.profile)
+    || !validSupplementPlan(value.profile.supplementPlan))) throw new Error('个人资料无效');
   if (owner === null && COLLECTIONS.some((name) => value[name].length)) throw new Error('记录缺少个人资料');
   for (const name of COLLECTIONS) {
     const ids = new Set();
@@ -53,7 +60,7 @@ export function validateServerState(value) {
         || (row.sodiumMg !== undefined && !bounded(row.sodiumMg, 0, 100_000)))) throw new Error('饮食记录无效');
       if (name === 'trainings' && (!label(row.exerciseType) || !bounded(row.durationMin, 1, 1440)
         || !bounded(row.estimatedKcal, 0, 50_000) || row.estimateSource !== 'manual')) throw new Error('训练记录无效');
-      if (name === 'days' && typeof row.dietCompleted !== 'boolean') throw new Error('完成状态无效');
+      if (name === 'days' && (typeof row.dietCompleted !== 'boolean' || !validSupplementChecks(row.supplementTakenIds))) throw new Error('完成状态无效');
       ids.add(row.id);
       if (['plans', 'weights', 'days'].includes(name)) {
         if (dates.has(row.date)) throw new Error(`${name} 日期重复`);

@@ -1,6 +1,7 @@
 import './styles/global.css';
 import './styles/iphone.css';
 import { layout } from './components/layout';
+import { refreshDailyMessage } from './components/daily-message';
 import { profilePage } from './pages/profile';
 import { bindProfileForm, profileForm } from './pages/profile-form';
 import { todayPage } from './pages/today';
@@ -25,6 +26,8 @@ import { bindFoodLibrary, foodLibraryPage } from './pages/food-library';
 import { MEALS } from './domain/records';
 import type { MealType } from './domain/models';
 import { bindExercises, exercisesPage } from './pages/exercises';
+import { bindSupplements, supplementsPage } from './pages/supplements';
+import { SupplementService, supplementProgress } from './services/supplements';
 
 const root = document.querySelector<HTMLDivElement>('#app');
 if (!root) throw new Error('FitTrack root element is missing');
@@ -34,6 +37,7 @@ const service = new ProfileService(repository);
 const records = new RecordService(repository);
 const backups = new BackupService(repository);
 const sync = new SyncService(repository);
+const supplements = new SupplementService(repository);
 let generation = 0;
 let shownDate = dateKey(new Date());
 
@@ -49,7 +53,7 @@ async function render(): Promise<void> {
     const params = new URLSearchParams(query);
     let route = path || '/today';
     if (!state.profile && route !== '/backup' && route !== '/sync') route = '/onboarding';
-    else if (!['/today', '/profile', '/profile/edit', '/diet', '/diet/edit', '/library', '/training', '/training/edit', '/exercises', '/weight', '/weight/edit', '/trends', '/backup', '/sync', '/onboarding'].includes(route)) route = '/today';
+    else if (!['/today', '/profile', '/profile/edit', '/diet', '/diet/edit', '/library', '/supplements', '/training', '/training/edit', '/exercises', '/weight', '/weight/edit', '/trends', '/backup', '/sync', '/onboarding'].includes(route)) route = '/today';
     if (state.profile && route === '/onboarding') route = '/today';
     if (route !== path) history.replaceState(null, '', `#${route}`);
     const editing = route === '/profile/edit';
@@ -70,6 +74,10 @@ async function render(): Promise<void> {
       app.innerHTML = layout(foodLibraryPage(date, shownDate, meal), 'diet');
       bindFoodLibrary(app, records);
       document.title = '食材与配方 · FitTrack';
+    } else if (route === '/supplements') {
+      app.innerHTML = layout(supplementsPage(state, shownDate), 'diet');
+      bindSupplements(app, supplements, render);
+      document.title = '每日补给 · FitTrack';
     } else if (route === '/exercises') {
       let date = params.get('date') ?? shownDate;
       try { validateRecordDate(date, shownDate); } catch { date = shownDate; }
@@ -109,7 +117,7 @@ async function render(): Promise<void> {
       app.innerHTML = layout(profilePage(state.profile), 'profile');
       document.title = '我的 · FitTrack';
     } else {
-      app.innerHTML = layout(todayPage(dailySummary(state, shownDate), shownDate, adaptiveRecommendation(state, shownDate)), 'today');
+      app.innerHTML = layout(todayPage(dailySummary(state, shownDate), shownDate, adaptiveRecommendation(state, shownDate), supplementProgress(state, shownDate)), 'today');
       document.title = '今日 · FitTrack';
     }
     app.querySelector<HTMLElement>('h1')?.focus({ preventScroll: true });
@@ -126,7 +134,8 @@ async function render(): Promise<void> {
 window.addEventListener('hashchange', () => { void render(); });
 // Refresh a dashboard left open overnight, without discarding an unfinished form.
 function refreshDay(): void {
-  if (!app.querySelector('form') && shownDate !== dateKey(new Date())) void render();
+  refreshDailyMessage(app);
+  if ((!app.querySelector('form') || location.hash.startsWith('#/supplements')) && shownDate !== dateKey(new Date())) void render();
 }
 document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshDay(); });
 window.setInterval(refreshDay, 30_000);
