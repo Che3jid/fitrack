@@ -24,7 +24,15 @@ export interface ProfileInput {
   goal: Goal;
 }
 
-export interface UserProfile extends Entity, ProfileInput {}
+export interface UserProfile extends Entity, ProfileInput {
+  /** Optional because existing profiles predate the daily supplement checklist. */
+  supplementPlan?: SupplementItem[];
+}
+
+export interface SupplementItem {
+  id: string;
+  name: string;
+}
 
 /** All values describe the amount actually eaten, not values per 100 g. */
 export interface Nutrition {
@@ -71,4 +79,6 @@ export interface DailyPlan extends Entity, EnergyPlan {
 export interface DayStatus extends Entity {
   date: DateKey;
   dietCompleted: boolean;
+  /** Optional to preserve older local databases and backups. */
+  supplementTakenIds?: string[];
 }

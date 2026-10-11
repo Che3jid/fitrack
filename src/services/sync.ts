@@ -9,7 +9,7 @@ export interface SyncPreview {
   localRaw: string;
 }
 
-export function serverUrl(raw: string, path: '/api/state' | '/api/catalog' = '/api/state'): string {
+export function serverUrl(raw: string, path: '/api/state' | '/api/catalog' | '/api/exercises' = '/api/state'): string {
   const url = new URL(raw.trim());
   const host = url.hostname.toLowerCase();
   const privateHttp = ['localhost', '127.0.0.1', '[::1]'].includes(host)

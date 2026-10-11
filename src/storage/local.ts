@@ -23,7 +23,15 @@ function entity(value: unknown): value is Record<string, unknown> {
 }
 function profile(value: unknown): boolean {
   if (!record(value)) return false;
-  try { validateProfile(value as unknown as ProfileInput); return true; } catch { return false; }
+  try {
+    validateProfile(value as unknown as ProfileInput);
+    if (value.supplementPlan !== undefined && (!Array.isArray(value.supplementPlan)
+      || value.supplementPlan.length > 20
+      || value.supplementPlan.some((item) => !record(item) || typeof item.id !== 'string' || !item.id
+        || typeof item.name !== 'string' || !item.name.trim() || item.name.trim().length > 40)
+      || new Set(value.supplementPlan.map((item) => item.id)).size !== value.supplementPlan.length)) return false;
+    return true;
+  } catch { return false; }
 }
 /** Reject unsupported/corrupt data without overwriting it. Migrations are explicit. */
 export function parseState(raw: string, depth = 0): AppState {
@@ -61,7 +69,11 @@ export function parseState(raw: string, depth = 0): AppState {
       else if (kind === 'trainings') {
         validateTraining(entry as unknown as TrainingInput);
         if (entry.estimateSource !== 'manual') throw new Error('Invalid estimate source');
-      } else if (typeof entry.dietCompleted !== 'boolean') throw new Error('Invalid completion status');
+      } else if (typeof entry.dietCompleted !== 'boolean'
+        || (entry.supplementTakenIds !== undefined && (!Array.isArray(entry.supplementTakenIds)
+          || entry.supplementTakenIds.length > 20
+          || entry.supplementTakenIds.some((id: unknown) => typeof id !== 'string' || !id)
+          || new Set(entry.supplementTakenIds).size !== entry.supplementTakenIds.length))) throw new Error('Invalid completion status');
     }
   }
   return value as unknown as AppState;

@@ -1,0 +1,63 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.fittrack.app'
+    compileSdk 36
+
+    defaultConfig {
+        applicationId 'com.fittrack.app'
+        minSdk 26
+        targetSdk 35
+        versionCode 1
+        versionName '0.5.0'
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+}
+
+dependencies {
+    implementation 'androidx.webkit:webkit:1.17.1'
+}
+
+def webRoot = rootProject.projectDir.parentFile
+tasks.register('buildWeb', Exec) {
+    workingDir webRoot
+    commandLine System.getProperty('os.name').toLowerCase().contains('windows') ? 'npm.cmd' : 'npm', 'run', 'build'
+    inputs.files(fileTree(webRoot) { include 'src/**', 'index.html', 'vite.config.ts', 'tsconfig.json', 'package.json', 'package-lock.json' })
+    outputs.dir(file("${webRoot}/dist"))
+}
+
+abstract class SyncWebAssets extends DefaultTask {
+    @InputDirectory
+    @PathSensitive(PathSensitivity.RELATIVE)
+    abstract org.gradle.api.file.DirectoryProperty getWebDist()
+
+    @OutputDirectory
+    abstract org.gradle.api.file.DirectoryProperty getOutputDirectory()
+
+    @TaskAction
+    void syncAssets() {
+        project.sync {
+            from webDist
+            into outputDirectory.dir('web')
+        }
+    }
+}
+
+def syncWebAssets = tasks.register('syncWebAssets', SyncWebAssets) {
+    dependsOn 'buildWeb'
+    webDist.set(file("${webRoot}/dist"))
+    outputDirectory.set(layout.buildDirectory.dir('generated/fittrack-assets'))
+}
+
+androidComponents {
+    onVariants(selector().all()) { variant ->
+        variant.sources.assets.addGeneratedSourceDirectory(syncWebAssets) { task -> task.outputDirectory }
+    }
+}

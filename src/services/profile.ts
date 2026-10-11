@@ -28,6 +28,7 @@ export class ProfileService {
       const profile: UserProfile = {
         ...snapshot(input), id: previous?.id ?? this.id(), userId, schemaVersion: 1,
         createdAt: previous?.createdAt ?? timestamp, updatedAt: timestamp,
+        ...(previous?.supplementPlan ? { supplementPlan: previous.supplementPlan } : {}),
       };
       const plan = this.plan(profile, now, state.plans.find((entry) => entry.date === today));
       let weights = state.weights;

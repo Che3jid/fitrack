@@ -15,6 +15,7 @@ function json(response, status, data) {
 function allowedOrigin(origin) {
   if (!origin) return false;
   if (origin === 'null') return true; // The bundled iPhone WKWebView uses file://.
+  if (origin === 'https://appassets.androidplatform.net') return true; // The bundled Android WebViewAssetLoader origin.
   try {
     const url = new URL(origin);
     return url.protocol === 'http:' && ['localhost', '127.0.0.1', '[::1]'].includes(url.hostname);
@@ -61,6 +62,10 @@ export function createFitTrackServer({ database, token }) {
     if (request.url === '/api/catalog') {
       if (request.method !== 'GET') return json(response, 405, { error: '请求方式不支持' });
       return json(response, 200, { foods: database.readCatalog() });
+    }
+    if (request.url === '/api/exercises') {
+      if (request.method !== 'GET') return json(response, 405, { error: '请求方式不支持' });
+      return json(response, 200, { exercises: database.readExerciseCatalog() });
     }
     if (request.url !== '/api/state') return json(response, 404, { error: '接口不存在' });
     if (!authorized(request, token)) return json(response, 401, { error: '访问密钥无效' });

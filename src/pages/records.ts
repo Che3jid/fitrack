@@ -7,6 +7,7 @@ import { RecordService } from '../services/records';
 import type { RecordKind } from '../services/records';
 import { dailySummary } from '../services/summary';
 import { escapeHtml as html } from '../utils/html';
+import { sectionArt } from '../components/section-art';
 
 export const recordRoutes: Record<RecordKind, string> = { foods: '/diet', trainings: '/training', weights: '/weight' };
 const titles: Record<RecordKind, string> = { foods: '饮食记录', trainings: '训练记录', weights: '体重记录' };
@@ -37,6 +38,7 @@ export function recordsPage(state: AppState, kind: RecordKind, date: string, tod
       <strong class="metric">${total ? number(total.energyKcal) : '—'} <small>kcal</small></strong>
       <p class="muted">蛋白质 ${total ? decimal(total.proteinG) : '—'} g · 碳水 ${total ? decimal(total.carbsG) : '—'} g · 脂肪 ${total ? decimal(total.fatG) : '—'} g</p>
       <p class="muted">${knownSodium.length ? `已知钠 ${number(sodiumMg)} mg · 约合盐 ${decimal(sodiumMg * 2.5 / 1000)} g${knownSodium.length < summary.foods.length ? '（部分记录无钠数据）' : ''}` : '钠摄入：暂无可计算记录'}</p>
+      <a class="secondary" href="#/supplements">每日补给清单与打卡 →</a>
       <a class="secondary" href="#/library?${new URLSearchParams({ date, meal: 'breakfast' })}">用食材配方计算一餐</a>
       <button class="secondary" data-action="completion">${summary.completed ? '改为记录中' : '标记当日记录完成'}</button>
       <p class="field-help">${summary.completed ? '修改、删除或恢复食物后，会重新标记为记录中。' : '确认已录入当天所有饮食后再标记完成。无食物记录时，标记完成代表当天摄入为 0。'}</p></section>`;
@@ -49,7 +51,7 @@ export function recordsPage(state: AppState, kind: RecordKind, date: string, tod
     }
   } else if (kind === 'trainings') {
     content = `<section class="card"><h2>当日训练</h2><strong class="metric">${summary.trainingMinutes} <small>分钟</small></strong><p class="muted">估算消耗 ${number(summary.trainingKcal)} kcal · ${summary.trainings.length} 次训练</p><p class="field-help">训练消耗单独展示，不重复叠加到 TDEE，也不自动增加饮食目标。</p></section>
-      <section class="card"><div class="section-heading"><h2>训练记录</h2><a class="secondary" href="${recordUrl(kind, date, true)}">添加训练</a></div>
+      <section class="card"><div class="section-heading"><h2>训练记录</h2><a class="secondary" href="${recordUrl(kind, date, true)}">添加训练</a></div><p><a class="secondary" href="#/exercises?${new URLSearchParams({ date })}">查看 3D 器械与动作库 →</a></p>
       ${summary.trainings.length ? summary.trainings.map((entry) => `<article class="record-row"><div class="record-copy"><strong>${html(entry.exerciseType)}</strong><p>${entry.durationMin} 分钟 · ${number(entry.estimatedKcal)} kcal</p><small>消耗由你手动估算</small></div>${actions(kind, date, entry)}</article>`).join('') : '<p class="empty-copy">这一天还没有训练记录。休息也是计划的一部分。</p>'}</section>`;
   } else {
     const weight = summary.weight;
@@ -58,7 +60,7 @@ export function recordsPage(state: AppState, kind: RecordKind, date: string, tod
       <p class="field-help">每天保留一条体重。较新的体重会同步到个人资料，并重算今日目标；补录更早的体重不覆盖较新的记录。</p></section>
       <section class="notice"><strong>删除与恢复</strong><p>删除后可在下方恢复。删除最新体重会回退到最近一条有效记录；若已无体重记录，个人资料仍保留最后已知体重。历史目标不会被重写。</p></section>`;
   }
-  return `<section class="page-heading"><p class="eyebrow">${kind === 'foods' ? '01 / NUTRITION' : kind === 'trainings' ? '02 / TRAINING' : '03 / BODY'}</p><h1 tabindex="-1">${titles[kind]}</h1></section>
+  return `<section class="page-heading${kind === 'weights' ? '' : ' illustrated-heading'}"><div><p class="eyebrow">${kind === 'foods' ? '01 / NUTRITION' : kind === 'trainings' ? '02 / TRAINING' : '03 / BODY'}</p><h1 tabindex="-1">${titles[kind]}</h1></div>${kind === 'foods' ? sectionArt('diet') : kind === 'trainings' ? sectionArt('training') : ''}</section>
     <div class="date-toolbar"><label>记录日期<input id="record-date" type="date" min="1900-01-01" max="${today}" value="${date}" required /></label>${date !== today ? `<a class="secondary" href="${recordUrl(kind, today)}">回到今天</a>` : ''}</div>
     <p id="record-error" class="form-error" role="alert"></p>${content}${deletedList(state, kind, date)}`;
 }

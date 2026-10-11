@@ -110,6 +110,7 @@ export class RecordService {
       const existing = state.days.find((entry) => entry.date === date);
       return { ...state, days: [...state.days.filter((entry) => entry.date !== date), {
         ...this.metadata(profile, now, existing), date, dietCompleted: completed,
+        ...(existing?.supplementTakenIds ? { supplementTakenIds: existing.supplementTakenIds } : {}),
       }] };
     });
   }

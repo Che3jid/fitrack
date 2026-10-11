@@ -1,27 +1,37 @@
-/* Compact light instrument layout shared by iPhone and narrow browsers. */
+/* Compact feed layout shared by iPhone and narrow browsers. */
 @media (max-width: 680px) {
   .shell { max-width: 520px; padding: 0 17px 108px; }
-  .brand { position: sticky; top: 0; z-index: 15; min-height: 61px; margin: 0 -17px; padding: 0 17px; background: #d4d4d0; }
+  .brand { position: sticky; top: 0; z-index: 15; min-height: 61px; margin: 0 -17px; padding: 0 17px; background: rgba(245, 244, 241, .88); -webkit-backdrop-filter: saturate(1.6) blur(18px); backdrop-filter: saturate(1.6) blur(18px); }
   .brand a { font-size: 18px; }
-  .brand-mark { width: 30px; height: 30px; font-size: 16px; border-radius: 7px; }
+  .brand-mark { width: 30px; height: 30px; border-radius: 9px; font-size: 16px; }
+  .brand:has(.daily-message) { min-height: 76px; }
+  .daily-message { max-width: 54%; padding: 9px 0 9px 12px; }
+  .daily-message-label { font-size: 9px; letter-spacing: .5px; }
+  .daily-message p { margin-top: 3px; font-size: 10px; line-height: 1.5; }
   .local-badge { padding: 6px 8px; font-size: 9px; }
-  .page-heading { padding: 27px 0 21px; margin-bottom: 18px; }
-  .page-heading h1 { font-size: 37px; }
+  .page-heading { padding: 23px 0 16px; margin-bottom: 10px; }
+  .page-heading h1 { font-size: 27px; }
   .page-heading .muted { font-size: 12px; }
-  .card { margin-bottom: 12px; padding: 20px; border-radius: 17px; }
-  .energy-dashboard { grid-template-columns: 1fr 1fr; gap: 16px 9px; padding: 18px; border-radius: 22px; }
+  .illustrated-heading { gap: 10px; }
+  .section-art { width: 96px; height: 66px; }
+  .card { margin-bottom: 12px; padding: 18px; border-radius: 18px; }
+  .energy-dashboard { grid-template-columns: 1fr 1fr; gap: 16px 9px; padding: 18px; }
+  .snapshot-strip { gap: 20px; padding-bottom: 20px; }
+  .snapshot-ring { width: 64px; height: 64px; }
   .energy-dashboard::before { right: 15px; top: 13px; width: 42px; }
   .energy-dashboard::after { bottom: 8px; right: 16px; }
   .dashboard-intro h2 { margin: 12px 0 6px; font-size: 20px; }
   .dashboard-intro p { max-width: 140px; font-size: 11px; }
+  .goal-art { width: min(100%, 130px); margin-top: 8px; }
+  .goal-art figcaption { font-size: 9px; letter-spacing: 0; }
   .calorie-gauge { width: min(39vw, 158px); }
-  .calorie-gauge::before { inset: 7px; }
+  .calorie-gauge::before { inset: 9px; }
   .calorie-gauge::after { inset: 16px; }
   .gauge-center span, .gauge-center small, .gauge-center b { font-size: 9px; }
   .gauge-center strong { font-size: clamp(30px, 8vw, 41px); }
   .gauge-center b { margin-top: 6px; }
   .dashboard-stats { grid-column: 1 / -1; margin-bottom: 13px; }
-  .dashboard-stats div { padding: 12px 10px; border-radius: 10px; }
+  .dashboard-stats div { padding: 12px; border-radius: 13px; }
   .dashboard-stats dd { font-size: 17px; }
   .quick-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 15px 0 21px; }
   .quick-actions .primary { grid-column: 1 / -1; }
@@ -36,7 +46,7 @@
   .notice { padding: 17px; }
   .bottom-nav { width: 100%; padding: 5px 7px calc(5px + env(safe-area-inset-bottom)); }
   .bottom-nav a { min-height: 52px; font-size: 10px; }
-  .tab-icon { width: 20px; height: 20px; }
+  .tab-icon { width: 52px; height: 28px; padding: 4px 16px; }
   .form-layout { grid-template-columns: 1fr; gap: 0; }
   .date-toolbar { gap: 10px; }
   .date-toolbar label { flex: 1; min-width: 0; }
@@ -47,6 +57,19 @@
   .catalog-food { gap: 8px; }
   .recipe-result strong { font-size: 27px; }
   .recipe-line { grid-template-columns: minmax(0, 1fr) 96px auto; }
+  .exercise-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .exercise-filters label:first-child { grid-column: 1 / -1; }
+  .exercise-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .exercise-library { padding: 0; border: 0; background: transparent; box-shadow: none; }
+  .exercise-card summary > img, .exercise-no-image { aspect-ratio: 1; }
+  .exercise-copy { padding: 10px; }
+  .exercise-copy strong { font-size: 12px; }
+  .exercise-copy small { font-size: 10px; }
+  .equipment-model-canvas { height: 220px; }
+  .equipment-showcase-layout { grid-template-columns: 1fr; gap: 12px; }
+  .equipment-showcase-controls p { margin-top: 2px; }
+  .supplement-add { align-items: stretch; flex-direction: column; }
+  .supplement-add button { align-self: flex-start; }
   .record-actions { margin-left: auto; }
   .chart-card { padding: 18px 12px; }
   .chart-wrap svg { min-height: 160px; }
